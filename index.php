@@ -45,7 +45,9 @@ switch ($message) {
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
-        $reply = getPwGen("format=sentences&pc=1&wc=5");
+        $wc = rand(3,5);
+        $dc = rand (0,2);
+        $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
         sendMessage($reply,$chat,$token);
         break;
     default:
