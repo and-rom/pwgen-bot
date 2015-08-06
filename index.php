@@ -53,5 +53,4 @@ switch ($message) {
     default:
         sendMessage("Bad request:" . $message,$chat,$token);
 }
-
 ?>
