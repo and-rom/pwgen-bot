@@ -5,8 +5,9 @@ $START = "Привет! Я Telegram Бот, меня зовут FlimFlamBot. Я 
 $HELP = "Если нужно придумать пароль, отправь мне /pw. А если нужно придумать забавную фразу, тогда - /ff.";
 
 function prepareString($string) {
-  $string  = str_replace('+','%2B',$string);
-  $string  = str_replace(' ','%20',$string);
+  $string = urlencode($string);
+  $string = str_replace('+','%2B',$string);
+  $string = str_replace(' ','%20',$string);
   $string = trim($string);
   return $string;
 }
