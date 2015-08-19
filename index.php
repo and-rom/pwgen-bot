@@ -37,11 +37,11 @@ $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 switch ($message) {
     case "/start":
     case "/start@FlimFlamBot":
-        sendMessage(START,$chat,$token);
+        sendMessage($START,$chat,$token);
         break;
     case "/help":
     case "/help@FlimFlamBot":
-        sendMessage(HELP,$chat,$token);
+        sendMessage($HELP,$chat,$token);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
