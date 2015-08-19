@@ -6,8 +6,8 @@ $HELP = "Если нужно придумать пароль, отправь м�
 
 function prepareString($string) {
   $string = urlencode($string);
-  $string = str_replace('+','%2B',$string);
-  $string = str_replace(' ','%20',$string);
+  //$string = str_replace('+','%2B',$string);
+  //$string = str_replace(' ','%20',$string);
   $string = trim($string);
   return $string;
 }
