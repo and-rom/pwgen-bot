@@ -1,4 +1,9 @@
 <?php
+/*Messages*/
+const START = "Привет! Я Telegram Бот, меня зовут FlimFlamBot. Я могу придумывать сложные и легко запоминающиеся пароли на основе забавных фраз. Или могу просто развеселить забавными фразами.";
+
+const HELP = "Если нужно придумать пароль, спроси меня так: /pw. А если нужно придумать забавную фразу, тогда так: /ff.";
+
 function prepareString($string) {
   $string  = str_replace('+','%2B',$string);
   $string  = str_replace(' ','%20',$string);
@@ -32,11 +37,11 @@ $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 switch ($message) {
     case "/start":
     case "/start@FlimFlamBot":
-        sendMessage("Hi! I'm FlimFlamBot I can generate password and some flimflam for fun.",$chat,$token);
+        sendMessage(START,$chat,$token);
         break;
     case "/help":
     case "/help@FlimFlamBot":
-        sendMessage("If You want a password ask me like this: /pw. If you want funny phrase ask me like this: /ff.",$chat,$token);
+        sendMessage(HELP,$chat,$token);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
