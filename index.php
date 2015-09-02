@@ -35,7 +35,10 @@ $chat    = $action['message']['chat']['id'];
 $user    = $action['message']['from']['id'];
 $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
         file_put_contents("log.txt", var_export($message,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
-switch ($message) {
+list($command, $arguments) = explode(" ", $message, 2);;
+        file_put_contents("log.txt", var_export($command,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
+        file_put_contents("log.txt", var_export($arguments,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
+switch ($command) {
     case "/start":
     case "/start@FlimFlamBot":
         sendMessage($START, $chat, $token);
@@ -60,6 +63,6 @@ switch ($message) {
         sendMessage($reply, $chat, $token);
         break;
     default:
-        sendMessage("Bad request:" . $message, $chat, $token);
+        sendMessage("Bad request: " . $message, $chat, $token);
 }
 ?>
