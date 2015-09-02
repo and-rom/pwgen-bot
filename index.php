@@ -48,13 +48,11 @@ switch ($message) {
     case "/pw":
     case "/pw@FlimFlamBot":
         $reply = getPwGen("format=pure&pc=1&args=423&hl='");
-        file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $reply = explode(" ", $reply, 2);
         file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
-        $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1], 1);
+        $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
         file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $reply = implode(PHP_EOL, $reply);
-        file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         sendMessage($reply, $chat, $token);
         break;
     case "/ff":
