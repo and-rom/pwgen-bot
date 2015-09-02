@@ -2,7 +2,8 @@
 /*Messages*/
 $START = "Привет! Я Telegram бот, меня зовут FlimFlamBot. Я могу придумывать сложные и легко запоминающиеся пароли на основе забавных фраз. Или могу просто развеселить забавными фразами." . PHP_EOL . "Отправь мне /help, и я подскажу как со мной общаться." . PHP_EOL . "И еще. Иногда я задумываюсь, нужно просто подождать, я всегда отвечу.";
 
-$HELP = "Если нужно придумать пароль, отправь мне /pw." . PHP_EOL . "А если нужно придумать забавную фразу, тогда - /ff.";
+$HELP = "Если нужно придумать пароль, отправь мне /pw." . PHP_EOL . "А если нужно придумать забавную фразу, тогда - /ff." . PHP_EOL . "Подробнее о паролях: /help pw";
+$HELP_PW = "TODO";
 
 function prepareString($string) {
   $string = urlencode($string);
@@ -34,7 +35,6 @@ $message = $action['message']['text'];
 $chat    = $action['message']['chat']['id'];
 $user    = $action['message']['from']['id'];
 $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
-        file_put_contents("log.txt", var_export($message,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
 list($command, $arguments) = explode(" ", $message, 2);;
         file_put_contents("log.txt", var_export($command,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         file_put_contents("log.txt", var_export($arguments,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
@@ -45,15 +45,15 @@ switch ($command) {
         break;
     case "/help":
     case "/help@FlimFlamBot":
-        sendMessage($HELP, $chat, $token);
+        sendMessage(($arguments == "pw" ? $HELP_PW : $HELP), $chat, $token);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
         $reply = getPwGen("format=pure&pc=1&args=" . $arguments . "&hl='");
         $reply = explode(" ", $reply, 2);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
-        $reply = implode(PHP_EOL, $reply);
-        sendMessage($reply, $chat, $token);
+        $reply = implode(PHP_EOL . "Подсказка:" . PHP_EOL, $reply);
+        sendMessage("Пароль:" . PHP_EOL . $reply, $chat, $token);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
