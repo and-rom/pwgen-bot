@@ -47,7 +47,7 @@ switch ($message) {
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
-        $reply = getPwGen("format=pure&pc=1&args=423&hl='");
+        $reply = getPwGen("format=pure&pc=1&args=403&hl='");
         $reply = explode(" ", $reply, 2);
         file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
