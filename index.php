@@ -27,7 +27,6 @@ function getPwGen ($params) {
 }
 
 $json = file_get_contents('php://input');
-file_put_contents("log.txt", "start" . PHP_EOL, FILE_APPEND | LOCK_EX);
 if (empty($json)) exit;
 $action = json_decode($json, true);
 
@@ -35,7 +34,7 @@ $message = $action['message']['text'];
 $chat    = $action['message']['chat']['id'];
 $user    = $action['message']['from']['id'];
 $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
-
+        file_put_contents("log.txt", var_export($message,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
 switch ($message) {
     case "/start":
     case "/start@FlimFlamBot":
@@ -49,9 +48,7 @@ switch ($message) {
     case "/pw@FlimFlamBot":
         $reply = getPwGen("format=pure&pc=1&args=403&hl='");
         $reply = explode(" ", $reply, 2);
-        file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
-        file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $reply = implode(PHP_EOL, $reply);
         sendMessage($reply, $chat, $token);
         break;
