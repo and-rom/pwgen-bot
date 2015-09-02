@@ -49,6 +49,7 @@ switch ($message) {
         $reply = getPwGen("format=pure&pc=1&args=423&hl='");
         $reply = explode(" ",$reply,1);
         $reply[1] = str_replace ("'", "", $reply[1], 1)
+        $reply = implode(PHP_EOL, $reply);
         sendMessage($reply,$chat,$token);
         break;
     case "/ff":
