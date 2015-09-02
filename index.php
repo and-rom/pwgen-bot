@@ -36,7 +36,7 @@ $chat    = $action['message']['chat']['id'];
 $user    = $action['message']['from']['id'];
 $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 
-list($command, $argument) = explode(" ", $message, 2);;
+list($command, $argument) = explode(" ", $message, 2);
 
 switch ($command) {
     case "/start":
