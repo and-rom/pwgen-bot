@@ -62,8 +62,9 @@ switch ($command) {
         $wc = rand(3,5);
         $dc = rand (0,2);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
-        $reply = (preg_match('/^\d/', $reply) ? trim($reply) . "." : mb_strtoupper(mb_substr(trim($reply), 0, 1)) . ".");
-        sendMessage($reply, $chat, $token);
+        $reply = trim($reply);
+        $reply = mb_strtoupper(mb_substr($reply, 0, 1)):
+        sendMessage($reply. ".", $chat, $token);
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
