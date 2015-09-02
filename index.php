@@ -63,7 +63,7 @@ switch ($command) {
         $dc = rand (0,2);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
         $reply = trim($reply);
-        $reply = mb_strtoupper(mb_substr($reply, 0, 1));
+        $reply = mb_strtoupper(mb_substr($reply, 0, 1)) . mb_substr($reply, 1, mb_strlen($reply));
         sendMessage($reply. ".", $chat, $token);
         break;
     case "/ch":
