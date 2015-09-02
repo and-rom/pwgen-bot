@@ -49,7 +49,7 @@ switch ($command) {
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
-        $reply = getPwGen("format=pure&pc=1&args=403&hl='");
+        $reply = getPwGen("format=pure&pc=1&args=" . $arguments . "&hl='");
         $reply = explode(" ", $reply, 2);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
         $reply = implode(PHP_EOL, $reply);
