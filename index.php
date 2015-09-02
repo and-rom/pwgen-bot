@@ -2,8 +2,8 @@
 /*Messages*/
 $START = "Привет! Я Telegram бот, меня зовут FlimFlamBot. Я могу придумывать сложные и легко запоминающиеся пароли на основе забавных фраз. Или могу просто развеселить забавными фразами." . PHP_EOL . "Отправь мне /help, и я подскажу как со мной общаться." . PHP_EOL . "И еще. Иногда я задумываюсь, нужно просто подождать, я всегда отвечу.";
 
-$HELP = "Если нужно придумать пароль, отправь мне /pw." . PHP_EOL . "А если нужно придумать забавную фразу, тогда - /ff." . PHP_EOL . "Подробнее о паролях: /help pw";
-$HELP_PW = "TODO";
+$HELP = "Если нужно придумать пароль, отправь мне /pw." . PHP_EOL . "А если нужно придумать забавную фразу, тогда - /ff." . PHP_EOL . "Еще могу придумать за тебя тост. Отправь мне /ch" . PHP_EOL . "Подробнее о паролях: /help pw";
+$HELP_PW = "Комманда /pw может иметь аргументы. Аргументы задаются в виде числа после пробела. Например, /pw 424" . PHP_EOL . "Первая цифра - количество слов во фразе (значения от 3 до 5)." . PHP_EOL . "Вторая цифра - количество цифр в начале фразы (значения от 0 до 4)." . PHP_EOL . "Третья цифра - количество букв из каждого слова (значения от 2 до 4)." . PHP_EOL . "Черверая цифра - использовать заглавные буквы в начале слов (1 - использовать, 0 - нет)." . PHP_EOL . "Пятая цифра - использовать транслит (1 - использовать, 0 - нет)." . PHP_EOL . "Ни одна из цифр не является обязательной. Важен их порядок. Например, если ввести только две цифры, то будут заданы параметры количества слов и количества цифр. В незаданные параметры будут подставлены значения по умолчанию.";
 
 function prepareString($string) {
   $string = urlencode($string);
@@ -35,9 +35,9 @@ $message = $action['message']['text'];
 $chat    = $action['message']['chat']['id'];
 $user    = $action['message']['from']['id'];
 $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
-list($command, $arguments) = explode(" ", $message, 2);;
-        file_put_contents("log.txt", var_export($command,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
-        file_put_contents("log.txt", var_export($arguments,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
+
+list($command, $argument) = explode(" ", $message, 2);;
+
 switch ($command) {
     case "/start":
     case "/start@FlimFlamBot":
@@ -45,11 +45,11 @@ switch ($command) {
         break;
     case "/help":
     case "/help@FlimFlamBot":
-        sendMessage(($arguments == "pw" ? $HELP_PW : $HELP), $chat, $token);
+        sendMessage(($argument == "pw" ? $HELP_PW : $HELP), $chat, $token);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
-        $reply = getPwGen("format=pure&pc=1&args=" . $arguments . "&hl='");
+        $reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl='");
         $reply = explode(" ", $reply, 2);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
         $reply = implode(PHP_EOL . "Подсказка:" . PHP_EOL, $reply);
@@ -60,6 +60,16 @@ switch ($command) {
         $wc = rand(3,5);
         $dc = rand (0,2);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
+        $reply = mb_convert_case($reply,MB_CASE_TITLE) . ".";
+        sendMessage($reply, $chat, $token);
+        break;
+    case "/ch":
+    case "/ch@FlimFlamBot":
+        $wc = rand(3,5);
+        $dc = rand (0,2);
+        $dc = rand (0,2);
+        $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
+        $reply = "Выпьем за то, что " . $reply . "!";
         sendMessage($reply, $chat, $token);
         break;
     default:
