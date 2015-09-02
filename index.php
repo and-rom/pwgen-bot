@@ -38,28 +38,29 @@ $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 switch ($message) {
     case "/start":
     case "/start@FlimFlamBot":
-        sendMessage($START,$chat,$token);
+        sendMessage($START, $chat, $token);
         break;
     case "/help":
     case "/help@FlimFlamBot":
-        sendMessage($HELP,$chat,$token);
+        sendMessage($HELP, $chat, $token);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
         $reply = getPwGen("format=pure&pc=1&args=423&hl='");
-        $reply = explode(" ",$reply,1);
-        $reply[1] = str_replace ("'", "", $reply[1], 1)
+        $count = 1;
+        $reply = explode(" ", $reply, $count);
+        $reply[1] = str_replace ("'", "", $reply[1], $count)
         $reply = implode(PHP_EOL, $reply);
-        sendMessage($reply,$chat,$token);
+        sendMessage($reply, $chat, $token);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
         $wc = rand(3,5);
         $dc = rand (0,2);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
-        sendMessage($reply,$chat,$token);
+        sendMessage($reply, $chat, $token);
         break;
     default:
-        sendMessage("Bad request:" . $message,$chat,$token);
+        sendMessage("Bad request:" . $message, $chat, $token);
 }
 ?>
