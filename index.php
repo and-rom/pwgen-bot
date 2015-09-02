@@ -46,7 +46,7 @@ switch ($message) {
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
-        $reply = getPwGen("format=pure&pc=1&args=423");
+        $reply = getPwGen("format=pure&pc=1&args=423&hl='");
         sendMessage($reply,$chat,$token);
         break;
     case "/ff":
