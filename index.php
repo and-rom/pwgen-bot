@@ -49,7 +49,7 @@ switch ($message) {
         $reply = getPwGen("format=pure&pc=1&args=423&hl='");
         $count = 1;
         $reply = explode(" ", $reply, $count);
-        $reply[1] = str_replace ("'", "", $reply[1], $count)
+        $reply[1] = str_replace ("'", "", $reply[1], $count);
         $reply = implode(PHP_EOL, $reply);
         sendMessage($reply, $chat, $token);
         break;
