@@ -51,8 +51,7 @@ switch ($message) {
         file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $reply = explode(" ", $reply, 2);
         file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
-        $count = 1;
-        $reply[1] = str_replace ("'", "", $reply[1], $count);
+        $reply[1] = preg_replace ("'", "", $reply[1], 1);
         file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
         $reply = implode(PHP_EOL, $reply);
         file_put_contents("log.txt", var_export($reply,true) . PHP_EOL, FILE_APPEND | LOCK_EX);
