@@ -62,7 +62,7 @@ switch ($command) {
         $wc = rand(3,5);
         $dc = rand (0,2);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
-        $reply = mb_convert_case($reply,MB_CASE_TITLE) . ".";
+        $reply = mb_convert_case(trim($reply),MB_CASE_TITLE) . ".";
         sendMessage($reply, $chat, $token);
         break;
     case "/ch":
@@ -71,7 +71,7 @@ switch ($command) {
         $dc = rand (0,2);
         $dc = rand (0,2);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
-        $reply = "Выпьем за то, что " . $reply . "!";
+        $reply = "Выпьем за то, что " . trim($reply) . "!";
         sendMessage($reply, $chat, $token);
         break;
     default:
