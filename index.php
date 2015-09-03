@@ -92,6 +92,6 @@ switch ($command) {
         sendMessage($reply, $chat, $token);
         break;
     default:
-        sendMessage("Bad request: " . $message, $chat, $token);
+        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token);
 }
 ?>
