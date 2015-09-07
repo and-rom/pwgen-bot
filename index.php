@@ -25,10 +25,10 @@ $HELP_PW .= "В параметры, значения которых не зад�
 $HELP_PW .= "Одинарной кавычкой отделены те символы, которые используются в пароле.";
 
 function sendMessage($string, $chat, $token, $debug) {
-  $string = urlencode($string);
   if ($debug) {
     echo $string;
   } else {
+    $string = urlencode($string);
     $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?chat_id=' . $chat . '&text=' . $string;
     file_get_contents($request);
   }
@@ -42,9 +42,15 @@ function getPwGen ($params) {
   curl_close($curl);
   return $result;
 }
-if (isset($_GET['msg'] & !empty($_GET['msg']))) {
-  $message = $_GET['msg'];
+if (isset($_GET['msg']) && !empty($_GET['msg'])) {
+
+  $message = "/" . $_GET['msg'];
+  $chat    = NULL;
+  $user    = NULL;
+  $token   = NULL;
+
   $debug = True;
+  $del = "_";
 } else {
   $json = file_get_contents('php://input');
   if (empty($json)) exit;
@@ -56,8 +62,9 @@ if (isset($_GET['msg'] & !empty($_GET['msg']))) {
   $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 
   $debug = False;
+  $del = " ";
 }
-list($command, $argument) = explode(" ", $message, 2);
+list($command, $argument) = explode($del, $message, 2);
 
 switch ($command) {
     case "/start":
