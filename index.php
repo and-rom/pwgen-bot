@@ -88,27 +88,27 @@ switch ($command) {
           switch(rand(1,7)) {
             case 1:
                 $intro = "За ";
-                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 2:
                 $intro = "Ну , за ";
-                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 3:
                 $intro = "Жахнем за ";
-                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 4:
                 $intro = "Опрокинем за ";
-                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 5:
                 $intro = "Тренем по меленькой за ";
-                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 6:
                 $intro = "Хлопнем за ";
-                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 7:
                 $intro = "Выпьем за то, что ";
