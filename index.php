@@ -82,7 +82,38 @@ switch ($command) {
         $dc = rand (0,2);
         $dc = rand (0,2);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
-        $reply = "Выпьем за то, что " . trim($reply) . "!";
+        if ($wc == 5) {
+          $short_reply = explode(" ",$reply);
+          $size = sizeof($short_reply);
+          switch(rand(1,6)) {
+            case 1:
+                $intro = "За ";
+                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                break;
+            case 2:
+                $intro = "Ну , за ";
+                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                break;
+            case 3:
+                $intro = "Жахнем за ";
+                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                break;
+            case 4:
+                $intro = "Опрокинем за ";
+                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                break;
+            case 5:
+                $intro = "Тренем по меленькой за ";
+                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                break;
+            case 6:
+                $intro = "Хлопнем за ";
+                break;
+          }
+        } else {
+          $intro = "Выпьем за то, что ";
+        }
+        $reply = $intro . trim($reply) . "!";
         sendMessage($reply, $chat, $token);
         break;
     default:
