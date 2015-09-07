@@ -85,7 +85,7 @@ switch ($command) {
         if ($wc == 5) {
           $short_reply = explode(" ",$reply);
           $size = sizeof($short_reply);
-          switch(rand(1,6)) {
+          switch(rand(1,7)) {
             case 1:
                 $intro = "За ";
                 $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
@@ -108,6 +108,10 @@ switch ($command) {
                 break;
             case 6:
                 $intro = "Хлопнем за ";
+                $reply = $short_reply[$size-1] . " " . $short_reply[$size-2];
+                break;
+            case 7:
+                $intro = "Выпьем за то, что ";
                 break;
           }
         } else {
