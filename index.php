@@ -24,10 +24,14 @@ $HELP_PW .= "Например, если ввести только две циф�
 $HELP_PW .= "В параметры, значения которых не заданы, будут подставлены значения по умолчанию." . PHP_EOL;
 $HELP_PW .= "Одинарной кавычкой отделены те символы, которые используются в пароле.";
 
-function sendMessage($string,$chat,$token) {
+function sendMessage($string, $chat, $token, $debug) {
   $string = urlencode($string);
-  $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?chat_id=' . $chat . '&text=' . $string;
-  file_get_contents($request);
+  if ($debug) {
+    echo $string;
+  } else {
+    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?chat_id=' . $chat . '&text=' . $string;
+    file_get_contents($request);
+  }
 }
 
 function getPwGen ($params) {
@@ -38,26 +42,31 @@ function getPwGen ($params) {
   curl_close($curl);
   return $result;
 }
+if (isset($_GET['msg'] & !empty($_GET['msg']))) {
+  $message = $_GET['msg'];
+  $debug = True;
+} else {
+  $json = file_get_contents('php://input');
+  if (empty($json)) exit;
+  $action = json_decode($json, true);
 
-$json = file_get_contents('php://input');
-if (empty($json)) exit;
-$action = json_decode($json, true);
+  $message = $action['message']['text'];
+  $chat    = $action['message']['chat']['id'];
+  $user    = $action['message']['from']['id'];
+  $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 
-$message = $action['message']['text'];
-$chat    = $action['message']['chat']['id'];
-$user    = $action['message']['from']['id'];
-$token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
-
+  $debug = False;
+}
 list($command, $argument) = explode(" ", $message, 2);
 
 switch ($command) {
     case "/start":
     case "/start@FlimFlamBot":
-        sendMessage($START, $chat, $token);
+        sendMessage($START, $chat, $token, $debug);
         break;
     case "/help":
     case "/help@FlimFlamBot":
-        sendMessage(($argument == "pw" ? $HELP_PW : $HELP), $chat, $token);
+        sendMessage(($argument == "pw" ? $HELP_PW : $HELP), $chat, $token, $debug);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
@@ -65,7 +74,7 @@ switch ($command) {
         $reply = explode(" ", $reply, 2);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
         $reply = implode(PHP_EOL . "Подсказка:" . PHP_EOL, $reply);
-        sendMessage("Пароль:" . PHP_EOL . $reply, $chat, $token);
+        sendMessage("Пароль:" . PHP_EOL . $reply, $chat, $token, $debug);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
@@ -74,7 +83,7 @@ switch ($command) {
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
         $reply = trim($reply);
         $reply = mb_strtoupper(mb_substr($reply, 0, 1)) . mb_substr($reply, 1, mb_strlen($reply));
-        sendMessage($reply. ".", $chat, $token);
+        sendMessage($reply. ".", $chat, $token, $debug);
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
@@ -103,7 +112,7 @@ switch ($command) {
                 $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 5:
-                $intro = "Тренем по меленькой за ";
+                $intro = "Трахнем по маленькой за ";
                 $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 6:
@@ -118,9 +127,9 @@ switch ($command) {
           $intro = "Выпьем за то, что ";
         }
         $reply = $intro . trim($reply) . "!";
-        sendMessage($reply, $chat, $token);
+        sendMessage($reply, $chat, $token, $debug);
         break;
     default:
-        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token);
+        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
 }
 ?>
