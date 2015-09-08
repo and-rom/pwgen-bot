@@ -119,7 +119,7 @@ switch ($command) {
                 $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 5:
-                $intro = "Трахнем по маленькой за ";
+                $intro = "Тяпнем по маленькой за ";
                 $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
                 break;
             case 6:
