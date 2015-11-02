@@ -42,8 +42,8 @@ function getPwGen ($params) {
   curl_close($curl);
   return $result;
 }
-if (isset($_GET['msg']) && !empty($_GET['msg'])) {
 
+if (isset($_GET['msg']) && !empty($_GET['msg'])) {
   $message = "/" . $_GET['msg'];
   $chat    = NULL;
   $user    = NULL;
@@ -53,7 +53,7 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
   $del = "_";
 } else {
   $json = file_get_contents('php://input');
-  if (empty($json)) exit;
+  if (empty($json)) header("Location: https://telegram.me/FlimFlamBot");exit;
   $action = json_decode($json, true);
 
   $message = $action['message']['text'];
