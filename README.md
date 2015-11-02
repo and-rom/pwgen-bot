@@ -1,2 +1,4 @@
 # pwgen-bot
-Telegram Bot for password generator
+Telegram Bot for [passwordGenerator](https://github.com/and-rom/passwordGenerator).
+## Requirements
+- php-mbstring
