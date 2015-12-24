@@ -30,7 +30,7 @@ function sendMessage($string, $chat, $token, $debug) {
     echo $string;
   } else {
     $string = urlencode($string);
-    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?chat_id=' . $chat . '&text=' . $string;
+    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?chat_id=' . $chat . '&parse_mode=Markdown&text=' . $string;
     file_get_contents($request);
   }
 }
@@ -84,8 +84,8 @@ switch ($command) {
         $reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl='");
         $reply = explode(" ", $reply, 2);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
-        $reply = implode(PHP_EOL . "Подсказка:" . PHP_EOL, $reply);
-        sendMessage("Пароль:" . PHP_EOL . $reply, $chat, $token, $debug);
+        $reply = implode(PHP_EOL . "*Подсказка:*" . PHP_EOL, $reply);
+        sendMessage("*Пароль:*" . PHP_EOL . $reply, $chat, $token, $debug);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
