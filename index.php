@@ -99,8 +99,9 @@ switch ($command) {
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
+        $memcache_obj = memcache_connect('memcache_host', 11211);
         echo "ch";
-        $count = getenv('count');
+        $count = memcache_get($memcache_obj, 'count');
         echo $count;
         if (!$count) {$count = 1;}
         if ($count != 3 ) {
@@ -150,7 +151,7 @@ switch ($command) {
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
         echo $count;
-        putenv("count=$count");
+        memcache_set($memcache_obj, 'count', $count, 0, 30);
         break;
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
