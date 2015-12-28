@@ -148,6 +148,7 @@ switch ($command) {
         }
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
+        echo $count;
         putenv("count=$count");
         break;
     default:
