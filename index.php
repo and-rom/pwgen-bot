@@ -77,7 +77,8 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
 
 session_id($chat);
 session_start();
-
+echo ini_get('session.name');
+echo session_id();
 list($command, $argument) = explode($del, $message, 2);
 
 switch ($command) {
