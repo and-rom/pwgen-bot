@@ -166,5 +166,5 @@ switch ($command) {
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
 }
-session_destroy();
+session_write_close();
 ?>
