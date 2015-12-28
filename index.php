@@ -99,8 +99,8 @@ switch ($command) {
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
-        $memcache_obj = memcache_connect('memcache_host', 11211);
         echo "ch";
+        $memcache_obj = memcache_connect('memcache_host', 11211);
         $count = memcache_get($memcache_obj, 'count');
         echo $count;
         if (!$count) {$count = 1;}
