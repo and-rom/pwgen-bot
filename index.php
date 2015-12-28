@@ -79,6 +79,7 @@ session_id($chat);
 session_start();
 echo ini_get('session.name');
 echo session_id();
+echo session_name();
 list($command, $argument) = explode($del, $message, 2);
 
 switch ($command) {
