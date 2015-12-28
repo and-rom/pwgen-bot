@@ -99,6 +99,7 @@ switch ($command) {
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
+        echo "ch";
         $count = apc_fetch("count", $success);
         echo $count;
         if (!$success) {$count = 1;}
