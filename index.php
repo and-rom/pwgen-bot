@@ -101,7 +101,7 @@ switch ($command) {
     case "/ff":
     case "/ff@FlimFlamBot":
         $wc = rand(3,5);
-        $dc = rand (0,2);
+        $dc = rand (0,1);
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
         $reply = trim($reply);
         $reply = mb_strtoupper(mb_substr($reply, 0, 1)) . mb_substr($reply, 1, mb_strlen($reply));
