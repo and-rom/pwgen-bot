@@ -160,8 +160,8 @@ switch ($command) {
         }
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
-        echo $count;
         $_SESSION['value'] = $count;
+        echo $_SESSION['count'];
         break;
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
