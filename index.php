@@ -79,9 +79,6 @@ session_id($chat);
 session_name($chat);
 session_cache_expire(1);
 session_start();
-echo ini_get('session.name');
-echo session_id();
-echo session_name();
 list($command, $argument) = explode($del, $message, 2);
 
 switch ($command) {
@@ -113,7 +110,6 @@ switch ($command) {
     case "/ch":
     case "/ch@FlimFlamBot":
         $count = $_SESSION['count'];
-        var_dump($count);
         if (!$count) {$count = 1;}
         if ($count % 3 != 0) {
           $wc = rand(3,5);
