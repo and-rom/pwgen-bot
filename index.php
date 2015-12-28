@@ -100,10 +100,9 @@ switch ($command) {
     case "/ch":
     case "/ch@FlimFlamBot":
         echo "ch";
-        $memcache_obj = memcache_connect('memcache_host', 11211);
-        echo "ch";
-        $count = memcache_get($memcache_obj, 'count');
-        echo $count;
+        $memcache_obj = new Memcache;
+        $count = = @$memcache_obj->get('count');
+        var_dump($count);
         if (!$count) {$count = 1;}
         if ($count != 3 ) {
           $wc = rand(3,5);
@@ -152,7 +151,8 @@ switch ($command) {
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
         echo $count;
-        var_dump(memcache_set($memcache_obj, 'count', $count, 0, 30));
+        var_dump($memcache_obj->set('count', date('G:i:s'), false, 5));
+        $memcache_obj->close();
         break;
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
