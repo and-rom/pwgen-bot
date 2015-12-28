@@ -101,6 +101,7 @@ switch ($command) {
     case "/ch@FlimFlamBot":
         echo "ch";
         $count = apc_fetch("count", $success);
+        echo "after fetch";
         var_dump( $count);
         var_dump( $success);
         if (!$success) {$count = 1;}
