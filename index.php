@@ -115,7 +115,7 @@ switch ($command) {
         $count = $_SESSION['count'];
         var_dump($count);
         if (!$count) {$count = 1;}
-        if ($count != 3 ) {
+        if ($count % 3 != 0) {
           $wc = rand(3,5);
           $dc = rand (0,2);
           $dc = rand (0,2);
