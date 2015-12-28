@@ -100,6 +100,7 @@ switch ($command) {
     case "/ch":
     case "/ch@FlimFlamBot":
         $count = apc_fetch("count", $success);
+        echo $count;
         if (!$success) {$count = 1;}
         if ($count != 3 ) {
           $wc = rand(3,5);
