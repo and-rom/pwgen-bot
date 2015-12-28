@@ -143,7 +143,7 @@ switch ($command) {
           }
           $reply = $intro . trim($reply) . "!";
         } else {
-          $reply = "Выпьем за любовь!"
+          $reply = "Выпьем за любовь!";
         }
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
