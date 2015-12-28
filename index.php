@@ -152,7 +152,7 @@ switch ($command) {
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
         echo $count;
-        memcache_set($memcache_obj, 'count', $count, 0, 30);
+        var_dump(memcache_set($memcache_obj, 'count', $count, 0, 30));
         break;
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
