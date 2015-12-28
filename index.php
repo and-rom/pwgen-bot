@@ -101,7 +101,7 @@ switch ($command) {
     case "/ch@FlimFlamBot":
         echo "ch";
         $memcache_obj = new Memcache;
-        $count = = @$memcache_obj->get('count');
+        $count = @$memcache_obj->get('count');
         var_dump($count);
         if (!$count) {$count = 1;}
         if ($count != 3 ) {
