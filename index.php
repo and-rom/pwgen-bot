@@ -1,6 +1,11 @@
 <?php
 error_reporting(0);
 mb_internal_encoding("UTF-8");
+     ini_set("session.use_cookies", 0);
+     ini_set("session.use_only_cookies", 0);
+     ini_set("session.use_trans_sid", 1);
+     ini_set("session.cache_limiter", "");
+
 
 /*Messages*/
 $START = "_Привет!_". PHP_EOL;
@@ -47,8 +52,8 @@ function getPwGen ($params) {
 
 if (isset($_GET['msg']) && !empty($_GET['msg'])) {
   $message = "/" . $_GET['msg'];
-  $chat    = NULL;
-  $user    = NULL;
+  $chat    = $_GET['chat'];
+  $user    = $_GET['user'];
   $token   = NULL;
 
   $debug = True;
@@ -69,6 +74,10 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
   $debug = False;
   $del = " ";
 }
+
+session_id($chat);
+session_start();
+
 list($command, $argument) = explode($del, $message, 2);
 
 switch ($command) {
@@ -99,9 +108,7 @@ switch ($command) {
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
-        echo "ch";
-        $memcache_obj = new Memcache;
-        $count = @$memcache_obj->get('count');
+        $count = $_SESSION['count'];
         var_dump($count);
         if (!$count) {$count = 1;}
         if ($count != 3 ) {
@@ -151,10 +158,10 @@ switch ($command) {
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
         echo $count;
-        var_dump($memcache_obj->set('count', date('G:i:s'), false, 5));
-        $memcache_obj->close();
+        $_SESSION['value'] = $count;
         break;
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
 }
+session_write_close();
 ?>
