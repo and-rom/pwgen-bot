@@ -100,8 +100,9 @@ switch ($command) {
     case "/ch":
     case "/ch@FlimFlamBot":
         echo "ch";
-        if (!$count = getenv('count')) {$count = 1;}
+        $count = getenv('count');
         echo $count;
+        if (!$count) {$count = 1;}
         if ($count != 3 ) {
           $wc = rand(3,5);
           $dc = rand (0,2);
