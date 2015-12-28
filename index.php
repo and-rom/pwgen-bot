@@ -103,6 +103,7 @@ switch ($command) {
         $count = apc_fetch("count", $success);
         echo $count;
         if (!$success) {$count = 1;}
+        echo $count;
         if ($count != 3 ) {
           $wc = rand(3,5);
           $dc = rand (0,2);
