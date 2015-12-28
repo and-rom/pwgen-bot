@@ -100,12 +100,7 @@ switch ($command) {
     case "/ch":
     case "/ch@FlimFlamBot":
         echo "ch";
-        var_dump(apc_fetch("count"));
-        $count = apc_fetch("count", $success);
-        echo "after fetch";
-        var_dump( $count);
-        var_dump( $success);
-        if (!$success) {$count = 1;}
+        if (!$count = getenv('count')) {$count = 1;}
         echo $count;
         if ($count != 3 ) {
           $wc = rand(3,5);
@@ -153,7 +148,7 @@ switch ($command) {
         }
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
-        apc_store("count",$count,30);
+        putenv("count="$count);
         break;
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
