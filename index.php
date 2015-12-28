@@ -148,7 +148,7 @@ switch ($command) {
         }
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
-        putenv("count="$count);
+        putenv("count=$count");
         break;
     default:
         sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
