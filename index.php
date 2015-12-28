@@ -160,7 +160,7 @@ switch ($command) {
         }
         sendMessage("_" . $reply . "_", $chat, $token, $debug);
         $count++;
-        $_SESSION['value'] = $count;
+        $_SESSION['count'] = $count;
         echo $_SESSION['count'];
         break;
     default:
