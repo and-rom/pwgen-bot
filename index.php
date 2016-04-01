@@ -101,8 +101,9 @@ switch ($command) {
         $reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl='");
         $reply = explode(" ", $reply, 2);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
+        $len = strlen($reply[1]);
         $reply = implode(PHP_EOL . "*Подсказка:*" . PHP_EOL, $reply);
-        sendMessage("*Пароль:*" . PHP_EOL . $reply, $chat, $token, $debug);
+        sendMessage("*Пароль:*" . PHP_EOL . $reply . PHP_EOL . "Длина: _" . $len . "_", $chat, $token, $debug);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
