@@ -165,7 +165,7 @@ switch ($command) {
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
-        $tmp_reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl=[]");
+        $tmp_reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl=()");
         $tmp_reply = explode(" ", $tmp_reply, 2);
         //$reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
         $len = strlen($tmp_reply[0]);
