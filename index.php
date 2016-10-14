@@ -81,7 +81,7 @@ EOD;
 
 /* Formats */
 define (MD,"Markdown");
-define (HTML,"HTML");
+define (HTML,"HTML")
 
 function sendMessage($string, $chat, $token, $debug, $format) {
   if ($debug) {
@@ -165,7 +165,7 @@ switch ($command) {
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
-        $reply = getPwGen("format=html&pc=1&args=" . $argument . "&hl=1");
+        $reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl=**");
         /*$reply = explode(" ", $reply, 2);
         $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
         $len = strlen($reply[0]);
