@@ -174,10 +174,10 @@ switch ($command) {
         $reply .= "*Фраза:*" . PHP_EOL;
         $reply .= $tmp_reply[1] . PHP_EOL;
         $reply .= "*Длина:*" . PHP_EOL;
-        $reply .= len;
+        $reply .= $len;
         //$reply = implode(PHP_EOL . "*Фраза:*" . PHP_EOL, $reply);
         //sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, $token, MD);
-        sendMessage($reply, $chat, $token, MD);
+        sendMessage($reply, $chat, $token, $debug, MD);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
@@ -186,7 +186,7 @@ switch ($command) {
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
         $reply = trim($reply);
         $reply = mb_strtoupper(mb_substr($reply, 0, 1)) . mb_substr($reply, 1, mb_strlen($reply));
-        sendMessage($reply. ".", $chat, $token, $debug);
+        sendMessage($reply. ".", $chat, $token, $debug, MD);
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
