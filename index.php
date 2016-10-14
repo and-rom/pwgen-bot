@@ -171,7 +171,7 @@ switch ($command) {
         $len = strlen($reply[0]);
         $reply = implode(PHP_EOL . "*Подсказка:*" . PHP_EOL, $reply);
         sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, $token, $debug);*/
-        sendMessage($reply, $chat, $token, $debug, HTML);
+        sendMessage($reply, $chat, $token, $debug, MD);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
