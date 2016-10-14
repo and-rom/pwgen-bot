@@ -91,7 +91,7 @@ function sendMessage($string, $chat, $token, $debug, $format) {
     echo $request;
   } else {
     $string = urlencode($string);
-    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
+    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=Markdown&text=' . $string;
     file_get_contents($request);
   }
 }
@@ -145,7 +145,7 @@ if (strpos($message, $del) !== false) {
 switch ($command) {
     case "/start":
     case "/start@FlimFlamBot":
-        sendMessage(START, $chat, $token, $debug,MD);
+        sendMessage(START, $chat, $token, $debug, MD);
         break;
     case "/help":
     case "/help@FlimFlamBot":
