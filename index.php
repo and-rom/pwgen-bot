@@ -88,7 +88,7 @@ function sendMessage($string, $chat, $token, $debug, $format) {
   $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
   if ($debug) {
     echo $request;
-    echo $string
+    echo $string;
   } else {
     file_get_contents($request);
   }
