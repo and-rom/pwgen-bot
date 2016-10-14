@@ -81,7 +81,7 @@ EOD;
 
 /* Formats */
 define (MD,"Markdown");
-define (HTML,"HTML")
+define (HTML,"HTML");
 
 function sendMessage($string, $chat, $token, $debug, $format) {
   if ($debug) {
