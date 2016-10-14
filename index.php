@@ -161,7 +161,7 @@ switch ($command) {
                 break;
         }
 
-        sendMessage($reply, $chat, $token, $debug,MD);
+        sendMessage($reply, $chat, $token, $debug, MD);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
@@ -171,7 +171,7 @@ switch ($command) {
         $len = strlen($reply[0]);
         $reply = implode(PHP_EOL . "*Подсказка:*" . PHP_EOL, $reply);
         sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, $token, $debug);*/
-        sendMessage($reply, $chat, $token, $debug,HTML);
+        sendMessage($reply, $chat, $token, $debug, HTML);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
@@ -229,13 +229,13 @@ switch ($command) {
         } else {
           $reply = "Выпьем за любовь!";
         }
-        sendMessage("_" . $reply . "_", $chat, $token, $debug);
+        sendMessage("_" . $reply . "_", $chat, $token, $debug, MD);
         $count++;
         $_SESSION['count'] = $count;
         echo $_SESSION['count'];
         break;
     default:
-        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug);
+        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug, MD);
 }
 session_write_close();
 ?>
