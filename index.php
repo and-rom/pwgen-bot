@@ -165,13 +165,19 @@ switch ($command) {
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
-        $reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl=**");
-        /*$reply = explode(" ", $reply, 2);
-        $reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
-        $len = strlen($reply[0]);
-        $reply = implode(PHP_EOL . "*Подсказка:*" . PHP_EOL, $reply);
-        sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, $token, $debug);*/
-        sendMessage($reply, $chat, $token, $debug, MD);
+        $tmp_reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl=**");
+        $tmp_reply = explode(" ", $tmp_reply, 2);
+        //$reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
+        $len = strlen($tmp_reply[0]);
+        $reply = "*Пароль:*" . PHP_EOL;
+        $reply .= "`" . $tmp_reply[0] . "`" . PHP_EOL;
+        $reply .= "*Фраза:*" . PHP_EOL;
+        $reply .= $tmp_reply[1] . PHP_EOL;
+        $reply .= "*Длина:*" . PHP_EOL;
+        $reply .= len;
+        //$reply = implode(PHP_EOL . "*Фраза:*" . PHP_EOL, $reply);
+        //sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, $token, MD);
+        sendMessage($reply, $chat, $token, MD);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
