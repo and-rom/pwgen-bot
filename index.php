@@ -81,11 +81,12 @@ EOD;
 
 /* Formats */
 define (MD,"Markdown");
-define (HTML,"html");
+define (HTML,"HTML");
 
 function sendMessage($string, $chat, $token, $debug, $format) {
   if ($debug) {
-    echo $string."\n";
+    echo $string."\n\n";
+    echo urlencode($string)."\n\n";
     $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
     echo $request;
   } else {
