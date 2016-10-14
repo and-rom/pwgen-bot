@@ -84,12 +84,13 @@ define (MD,"Markdown");
 define (HTML,"html");
 
 function sendMessage($string, $chat, $token, $debug, $format) {
-  $string = urlencode($string);
-  $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
   if ($debug) {
+    echo $string."\n";
+    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
     echo $request;
-    echo $string;
   } else {
+    $string = urlencode($string);
+    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
     file_get_contents($request);
   }
 }
