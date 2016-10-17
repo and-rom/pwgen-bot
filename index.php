@@ -121,6 +121,8 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
 
   $debug = True;
   $del = "_";
+
+  file_put_contents('log.txt',var_export($_GET,true)."\n",FILE_APPEND);
 } else {
   $json = file_get_contents('php://input');
   if (empty($json)) {
