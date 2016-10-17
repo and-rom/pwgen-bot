@@ -133,9 +133,9 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
     exit;
   }
 
-  file_put_contents('./log.txt',var_export($update,true)."\n",FILE_APPEND);
-
   $update = json_decode($json, true);
+
+  file_put_contents('./log.txt',var_export($update,true)."\n",FILE_APPEND);
 
   $entities_type = $update['entities']['type'];
 
