@@ -116,6 +116,8 @@ function getPwGen ($params) {
 }
 
 if (isset($_GET['msg']) && !empty($_GET['msg'])) {
+  file_put_contents('./log.txt',var_export($_GET,true)."\n",FILE_APPEND);
+
   $message = "/" . $_GET['msg'];
   $chat    = $_GET['chat'];
   $user    = $_GET['user'];
@@ -123,7 +125,6 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
   $debug = True;
   $del = "_";
 
-  file_put_contents('./log.txt',var_export($_GET,true)."\n",FILE_APPEND);
 } else {
   $json = file_get_contents('php://input');
 
@@ -131,6 +132,8 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
     header("Location: https://telegram.me/FlimFlamBot");
     exit;
   }
+
+  file_put_contents('./log.txt',var_export($update,true)."\n",FILE_APPEND);
 
   $update = json_decode($json, true);
 
@@ -147,7 +150,6 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
   $debug = False;
   $del = "_";
 
-  file_put_contents('./log.txt',var_export($update,true)."\n",FILE_APPEND);
 }
 
 session_id($chat);
