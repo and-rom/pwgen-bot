@@ -127,11 +127,13 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
     header("Location: https://telegram.me/FlimFlamBot");
     exit;
   }
-  $action = json_decode($json, true);
+  $update = json_decode($json, true);
 
-  $message = $action['message']['text'];
-  $chat    = $action['message']['chat']['id'];
-  $user    = $action['message']['from']['id'];
+  file_put_contents('log.txt',var_export($update,true)."\n",FILE_APPEND);
+
+  $message = $update['message']['text'];
+  $chat    = $update['message']['chat']['id'];
+  $user    = $update['message']['from']['id'];
   $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 
   $debug = False;
