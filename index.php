@@ -137,7 +137,7 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
 
   file_put_contents('./log.txt',var_export($update,true)."\n",FILE_APPEND);
 
-  $entities_type = $update['entities'][0]['type'];
+  $entities_type = $update['message']['entities'][0]['type'];
 
   if ($entities_type != 'bot_command') {
     exit;
