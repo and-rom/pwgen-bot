@@ -1,4 +1,5 @@
 <?php
+/*Settings*/
 error_reporting(0);
 mb_internal_encoding("UTF-8");
      ini_set("session.use_cookies", 0);
@@ -6,6 +7,7 @@ mb_internal_encoding("UTF-8");
      ini_set("session.use_trans_sid", 1);
      ini_set("session.cache_limiter", "");
 
+define(TOKEN, '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg')
 
 /*Messages*/
 const START = <<<EOD
@@ -91,15 +93,15 @@ EOD;
 define (MD,"Markdown");
 define (HTML,"HTML");
 
-function sendMessage($string, $chat, $token, $debug, $format) {
+function sendMessage($string, $chat, $debug, $format) {
   if ($debug) {
     echo $string."\n\n";
     echo urlencode($string)."\n\n";
-    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
+    $request = 'https://api.telegram.org/bot' . TOKEN . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
     echo $request;
   } else {
     $string = urlencode($string);
-    $request = 'https://api.telegram.org/bot' . $token . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
+    $request = 'https://api.telegram.org/bot' . TOKEN . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
     file_get_contents($request);
   }
 }
@@ -117,35 +119,42 @@ if (isset($_GET['msg']) && !empty($_GET['msg'])) {
   $message = "/" . $_GET['msg'];
   $chat    = $_GET['chat'];
   $user    = $_GET['user'];
-  $token   = NULL;
 
   $debug = True;
   $del = "_";
 
-  file_put_contents('log.txt',var_export($_GET,true)."\n",FILE_APPEND);
+  file_put_contents('./log.txt',var_export($_GET,true)."\n",FILE_APPEND);
 } else {
   $json = file_get_contents('php://input');
+
   if (empty($json)) {
     header("Location: https://telegram.me/FlimFlamBot");
     exit;
   }
+
   $update = json_decode($json, true);
 
-  file_put_contents('log.txt',var_export($update,true)."\n",FILE_APPEND);
+  $entities_type = $update['entities']['type'];
+
+  if ($entities_type != 'bot_command') {
+    exit;
+  }
 
   $message = $update['message']['text'];
   $chat    = $update['message']['chat']['id'];
   $user    = $update['message']['from']['id'];
-  $token   = '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg';
 
   $debug = False;
   $del = "_";
+
+  file_put_contents('./log.txt',var_export($update,true)."\n",FILE_APPEND);
 }
 
 session_id($chat);
 session_name($chat);
 session_cache_expire(1);
 session_start();
+
 if (strpos($message, $del) !== false) {
   list($command, $argument) = explode($del, $message, 2);
 } else {
@@ -157,7 +166,7 @@ if (strpos($message, $del) !== false) {
 switch ($command) {
     case "/start":
     case "/start@FlimFlamBot":
-        sendMessage(START, $chat, $token, $debug, MD);
+        sendMessage(START, $chat, $debug, MD);
         break;
     case "/help":
     case "/help@FlimFlamBot":
@@ -172,8 +181,7 @@ switch ($command) {
                 $reply = HELP;
                 break;
         }
-
-        sendMessage($reply, $chat, $token, $debug, MD);
+        sendMessage($reply, $chat, $debug, MD);
         break;
     case "/pw":
     case "/pw@FlimFlamBot":
@@ -188,8 +196,8 @@ switch ($command) {
         $reply .= "*Длина:*" . PHP_EOL;
         $reply .= $len;
         //$reply = implode(PHP_EOL . "*Фраза:*" . PHP_EOL, $reply);
-        //sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, $token, MD);
-        sendMessage($reply, $chat, $token, $debug, MD);
+        //sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, MD);
+        sendMessage($reply, $chat, $debug, MD);
         break;
     case "/ff":
     case "/ff@FlimFlamBot":
@@ -198,7 +206,7 @@ switch ($command) {
         $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
         $reply = trim($reply);
         $reply = mb_strtoupper(mb_substr($reply, 0, 1)) . mb_substr($reply, 1, mb_strlen($reply));
-        sendMessage($reply. ".", $chat, $token, $debug, MD);
+        sendMessage($reply. ".", $chat, $debug, MD);
         break;
     case "/ch":
     case "/ch@FlimFlamBot":
@@ -247,13 +255,14 @@ switch ($command) {
         } else {
           $reply = "Выпьем за любовь!";
         }
-        sendMessage("_" . $reply . "_", $chat, $token, $debug, MD);
+        sendMessage("_" . $reply . "_", $chat, $debug, MD);
         $count++;
         $_SESSION['count'] = $count;
         echo $_SESSION['count'];
         break;
     default:
-        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $token, $debug, MD);
+        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $debug, MD);
 }
+
 session_write_close();
 ?>
