@@ -7,7 +7,7 @@ mb_internal_encoding("UTF-8");
      ini_set("session.use_trans_sid", 1);
      ini_set("session.cache_limiter", "");
 
-define(TOKEN, '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg')
+define(TOKEN, '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg');
 
 /*Messages*/
 const START = <<<EOD
