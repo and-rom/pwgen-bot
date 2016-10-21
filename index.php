@@ -169,6 +169,7 @@ function processUpdate ($json) {
     } else {
       logData($update,False);
     }
+file_put_contents("./log.txt","\n".var_export($update,true)."\n",FILE_APPEND);
   } else {
     exit;
   }
@@ -213,6 +214,7 @@ function processGET ($GET) {
                     $user,
                   );
     logData($data);
+file_put_contents("./log.txt","\n".var_export($update,true)."\n",FILE_APPEND);
   } else {
     exit;
   }
