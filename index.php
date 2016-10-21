@@ -147,11 +147,10 @@ function processUpdate ($json) {
    
     if ($entities_type = 'bot_command') {
       $event = "bot command";
+      $debug = False;
+      $del = "_";
       processCommand($chat_id, $user_id, $text, $del, $debug);
     }
-   
-    $debug = False;
-    $del = "_";
    
     if (isset($event)) {
       $data = array (
