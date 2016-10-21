@@ -143,7 +143,6 @@ function processUpdate ($json) {
     
    
     $text = isset($update['message']['text']) ? $update['message']['text'] : "";
-  //isset(VAR) ? VAR : ''
    
     $entities_type = $update['message']['entities'][0]['type'];
    
@@ -171,7 +170,6 @@ function processUpdate ($json) {
     } else {
       logData($update,False);
     }
-file_put_contents("./log.txt","\n".var_export($update,true)."\n",FILE_APPEND);
   } else {
     exit;
   }
@@ -392,7 +390,7 @@ function getPwGen ($params) {
 }
 
 function debugEcho ($string) {
-  echo $string . "\n";
+  //echo $string . "\n";
 }
 
 function logData ($data, $flag = True) {
