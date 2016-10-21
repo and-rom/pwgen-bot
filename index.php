@@ -2,12 +2,17 @@
 /*Settings*/
 error_reporting(0);
 mb_internal_encoding("UTF-8");
-     ini_set("session.use_cookies", 0);
-     ini_set("session.use_only_cookies", 0);
-     ini_set("session.use_trans_sid", 1);
-     ini_set("session.cache_limiter", "");
+ini_set("session.use_cookies", 0);
+ini_set("session.use_only_cookies", 0);
+ini_set("session.use_trans_sid", 1);
+ini_set("session.cache_limiter", "");
+ini_set('session.gc_max_lifetime', 600);
+ini_set('session.gc_probability', 1);
+ini_set('session.gc_divisor', 1);
 
-define(TOKEN, '116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg');
+define(TOKEN, "116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg");
+define(BOTID, "116320087");
+define(DEVID, "62434569");
 
 /*Messages*/
 const START = <<<EOD
@@ -93,12 +98,280 @@ EOD;
 define (MD,"Markdown");
 define (HTML,"HTML");
 
-function sendMessage($string, $chat, $debug, $format) {
+function processUpdate ($json) {
+  $update = json_decode($json, true);
+  if (!empty($json)) {
+    $update_id = $update['update_id'];
+   
+    $user_id = $update['message']['from']['id'];
+    $user_username = isset($update['message']['from']['username']) ? $update['message']['from']['username'] : "";
+    $user_fname = isset($update['message']['from']['first_name']) ? $update['message']['from']['first_name'] : "";
+    $user_lname = isset($update['message']['from']['last_name']) ?  $update['message']['from']['last_name'] : "";
+   
+    $chat_id = $update['message']['chat']['id'];
+    $chat_type = $update['message']['chat']['type'];
+    $chat_title = $update['message']['chat']['title'];
+   
+    $date = date('Y-m-d H:i:s', $update['message']['date']);
+   
+    if ($update['message']['new_chat_member']) {
+      if ($update['message']['new_chat_member']['id'] == BOTID) {
+        $event = "bot added to group";
+      }
+      $event = "bot is a member of group";
+    }
+   
+    if ($update['message']['left_chat_member']) {
+      if ($update['message']['new_chat_member']['id'] == "116320087") {
+        $event = "bot deleted from group";
+      }
+      //bot is a member of group
+    }
+   
+    if ($update['message']['new_chat_title'] ||
+        $update['message']['new_chat_photo'] ||
+        $update['message']['delete_chat_photo']) {
+      $event = "bot is a member of group";
+    }
+
+    
+    if (intval($chat_id) < 0) {
+      $event = "bot is a member of group";
+    }
+    
+   
+    $text = isset($update['message']['text']) ? $update['message']['text'] : "";
+  //isset(VAR) ? VAR : ''
+   
+    $entities_type = $update['message']['entities'][0]['type'];
+   
+    if ($entities_type = 'bot_command') {
+      $event = "bot command";
+      processCommand($chat_id, $user_id, $text, $del, $debug);
+    }
+   
+    $debug = False;
+    $del = "_";
+   
+    if (isset($event)) {
+      $data = array (
+                    "TEL",
+                    $date,
+                    $user_id,
+                    $user_username,
+                    $user_fname . " " . $user_lname,
+                    $chat_id,
+                    $chat_type,
+                    $chat_title,
+                    $event,
+                    $text
+                  );
+      logData($data);
+    } else {
+      logData($update,False);
+    }
+  } else {
+    exit;
+  }
+}
+
+function processGET ($GET) {
+  debugEcho("Processing GET");
+  header("Content-Type: text/plain");
+  if (isset($_GET['msg']) && !empty($_GET['msg'])) {
+    if (!empty($_SERVER['HTTP_CLIENT_IP'])) {
+      $ip = $_SERVER['HTTP_CLIENT_IP'];
+    } elseif (!empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+      $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    } else {
+      $ip = $_SERVER['REMOTE_ADDR'];
+    }
+
+    if ($_GET['msg'] == "sess") {
+      header("Content-Type: text/plain");
+      echo "Session Save Path: " . ini_get( 'session.save_path');
+      echo "\nSession gc_maxlifetime: " . ini_get( 'session.gc_maxlifetime');
+      echo "\nSession gc_probability: " . ini_get( 'session.gc_probability');
+      echo "\nSession gc_divisor: " . ini_get( 'session.gc_divisor');
+      echo "\n";
+      print_r(scandir(session_save_path()));
+      print_r (gc_collect_cycles());
+    } else {
+      $message = "/" . $_GET['msg'];
+      $chat    = isset($_GET['chat']) ? $_GET['chat'] : "";
+      $user    = isset($_GET['user']) ? $_GET['user'] : "";
+
+      $debug = True;
+      $del = "_";
+      processCommand($chat, $user, $message, $del, $debug);
+    }
+    $data = array (
+                    "GET",
+                    date('Y-m-d H:i:s'),
+                    $ip,
+                    $_GET['msg'],
+                    $chat,
+                    $user,
+                  );
+    logData($data);
+  } else {
+    exit;
+  }
+}
+
+function processCommand ($chat_id, $user_id, $text, $del, $debug) {
+  debugEcho("Processing message");
+  debugEcho(($debug ? "it's debug" : "it's not debug"));
+  session_id($chat_id);
+  session_name($chat_id);
+  session_cache_expire(1);
+  session_start();
+
+  if (strpos($text, $del) !== false) {
+    list($command, $argument) = explode($del, $text, 2);
+  } else {
+    $command=$text;
+    $argument='';
+  }
+
+  switch ($command) {
+    case "/start":
+    case "/start@FlimFlamBot":
+        sendMessage(START, $chat_id, $debug, MD);
+        break;
+    case "/help":
+    case "/help@FlimFlamBot":
+      $reply = prepareHelp($argument);
+      sendMessage($reply, $chat_id, $debug, MD);
+      break;
+    case "/pw":
+    case "/pw@FlimFlamBot":
+      $reply = preparePw($argument);
+      sendMessage($reply, $chat_id, $debug, MD);
+      break;
+    case "/ff":
+    case "/ff@FlimFlamBot":
+      $reply = prepareFf($argument);
+      sendMessage($reply. ".", $chat_id, $debug, MD);
+      break;
+    case "/ch":
+    case "/ch@FlimFlamBot":
+      $reply = prepareCh($argument, $debug);
+      sendMessage("_" . $reply . "_", $chat_id, $debug, MD, $_SESSION['count']);
+      break;
+    default:
+        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat_id, $debug, MD);
+  }
+  session_write_close();
+}
+
+function prepareHelp ($argument) {
+  debugEcho("Preparing help");
+  switch ($argument) {
+      case "pw":
+          $reply = HELP_PW;
+          break;
+      case "about":
+          $reply = HELP_ABOUT;
+          break;
+      default:
+          $reply = HELP;
+          break;
+  }
+  return $reply;
+}
+
+function preparePw ($argument) {
+  debugEcho("Preparing pw");
+  $tmp_reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl=()");
+  $tmp_reply = explode(" ", $tmp_reply, 2);
+  $len = strlen($tmp_reply[0]);
+  $reply = "*Пароль:*" . PHP_EOL;
+  $reply .= "`" . $tmp_reply[0] . "`" . PHP_EOL;
+  $reply .= "*Фраза:*" . PHP_EOL;
+  $reply .= $tmp_reply[1] . PHP_EOL;
+  $reply .= "*Длина:*" . PHP_EOL;
+  $reply .= $len;
+  return $reply;
+}
+
+function prepareFf ($argument) {
+  debugEcho("Preparing ff");
+  $wc = rand(3,5);
+  $dc = rand (0,2);
+  $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
+  $reply = trim($reply);
+  $reply = mb_strtoupper(mb_substr($reply, 0, 1)) . mb_substr($reply, 1, mb_strlen($reply));
+  return $reply;
+}
+
+function prepareCh ($argument,$debug) {
+  debugEcho("Preparing ch");
+  debugEcho(($debug ? "it's debug" : "it's not debug"));
+  if (isset($_SESSION['count'])) {
+    $count = $_SESSION['count'];
+  } else {
+    $count = 1;
+  }
+   
+  if ($debug) {debugEcho("It's debug");echo "( " . $count . " )\n";}
+   
+  if ($count % 3 != 0) {
+    $wc = rand(3,5);
+    $dc = rand (0,1);
+    $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
+    if ($wc == 5) {
+      $short_reply = explode(" ",$reply);
+      $size = sizeof($short_reply);
+      switch(rand(1,7)) {
+        case 1:
+          $intro = "За ";
+          $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
+          break;
+        case 2:
+          $intro = "Ну, за ";
+          $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
+          break;
+        case 3:
+          $intro = "Жахнем за ";
+          $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
+          break;
+        case 4:
+          $intro = "Опрокинем за ";
+          $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
+          break;
+        case 5:
+          $intro = "Тяпнем по маленькой за ";
+          $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
+          break;
+        case 6:
+          $intro = "Хлопнем за ";
+          $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
+          break;
+        case 7:
+          $intro = "Выпьем за то, что ";
+          break;
+      }
+    } else {
+      $intro = "Выпьем за то, что ";
+    }
+    $reply = $intro . trim($reply) . "!";
+  } else {
+    $reply = "Выпьем за любовь!";
+  }
+  $count++;
+  $_SESSION['count'] = $count;
+  return $reply;
+}
+
+function sendMessage($string, $chat, $debug, $format, $extra = "") {
+debugEcho("Sendig message");
   if ($debug) {
     echo $string."\n\n";
     echo urlencode($string)."\n\n";
     $request = 'https://api.telegram.org/botTOKEN/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
     echo $request;
+    echo $extra;
   } else {
     $string = urlencode($string);
     $request = 'https://api.telegram.org/bot' . TOKEN . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
@@ -115,156 +388,40 @@ function getPwGen ($params) {
   return $result;
 }
 
-if (isset($_GET['msg']) && !empty($_GET['msg'])) {
-  file_put_contents('./log.txt',var_export($_GET,true)."\n",FILE_APPEND);
+function debugEcho ($string) {
+  echo $string . "\n";
+}
 
-  $message = "/" . $_GET['msg'];
-  $chat    = $_GET['chat'];
-  $user    = $_GET['user'];
-
-  $debug = True;
-  $del = "_";
-
-} else {
-  $json = file_get_contents('php://input');
-
-  if (empty($json)) {
-    header("Location: https://telegram.me/FlimFlamBot");
-    exit;
+function logData ($data, $flag = True) {
+  if ($flag) {
+    $string = implode(" | ",$data);
+    file_put_contents('./log.txt',"\n".$string,FILE_APPEND);
+  } else {
+    file_put_contents("./log.txt","\n".var_export($data,true)."\n",FILE_APPEND);
   }
-
-  $update = json_decode($json, true);
-
-  file_put_contents('./log.txt',var_export($update,true)."\n",FILE_APPEND);
-
-  $entities_type = $update['message']['entities'][0]['type'];
-
-  if ($entities_type != 'bot_command') {
-    exit;
-  }
-
-  $message = $update['message']['text'];
-  $chat    = $update['message']['chat']['id'];
-  $user    = $update['message']['from']['id'];
-
-  $debug = False;
-  $del = "_";
-
+  /*
+  GET string
+  file_put_contents('./log.txt',"\n".var_export($_GET,true)."\n".var_export($ip,true)."\n".date('Y-m-d H:i:s')."\n",FILE_APPEND);
+  JSON string
+  file_put_contents("./log.txt","\n".var_export($update,true)."\n",FILE_APPEND);
+  */
 }
 
-session_id($chat);
-session_name($chat);
-session_cache_expire(1);
-session_start();
+debugEcho("Starting");
 
-if (strpos($message, $del) !== false) {
-  list($command, $argument) = explode($del, $message, 2);
+if ($_GET) {
+  debugEcho("It's GET");
+  processGET($_GET);
+} elseif ($json = file_get_contents("php://input")) {
+  processUpdate($json);
 } else {
-  $command=$message;
-  $argument='';
+  header("Location: https://telegram.me/FlimFlamBot");
+  exit;
 }
 
 
-switch ($command) {
-    case "/start":
-    case "/start@FlimFlamBot":
-        sendMessage(START, $chat, $debug, MD);
-        break;
-    case "/help":
-    case "/help@FlimFlamBot":
-        switch ($argument) {
-            case "pw":
-                $reply = HELP_PW;
-                break;
-            case "about":
-                $reply = HELP_ABOUT;
-                break;
-            default:
-                $reply = HELP;
-                break;
-        }
-        sendMessage($reply, $chat, $debug, MD);
-        break;
-    case "/pw":
-    case "/pw@FlimFlamBot":
-        $tmp_reply = getPwGen("format=pure&pc=1&args=" . $argument . "&hl=()");
-        $tmp_reply = explode(" ", $tmp_reply, 2);
-        //$reply[1] = preg_replace ("/([0-9]+)'/", "$1", $reply[1]);
-        $len = strlen($tmp_reply[0]);
-        $reply = "*Пароль:*" . PHP_EOL;
-        $reply .= "`" . $tmp_reply[0] . "`" . PHP_EOL;
-        $reply .= "*Фраза:*" . PHP_EOL;
-        $reply .= $tmp_reply[1] . PHP_EOL;
-        $reply .= "*Длина:*" . PHP_EOL;
-        $reply .= $len;
-        //$reply = implode(PHP_EOL . "*Фраза:*" . PHP_EOL, $reply);
-        //sendMessage("*Пароль:*" . PHP_EOL . "`" . $reply . "`" . "*Длина:* " . $len, $chat, MD);
-        sendMessage($reply, $chat, $debug, MD);
-        break;
-    case "/ff":
-    case "/ff@FlimFlamBot":
-        $wc = rand(3,5);
-        $dc = rand (0,2);
-        $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
-        $reply = trim($reply);
-        $reply = mb_strtoupper(mb_substr($reply, 0, 1)) . mb_substr($reply, 1, mb_strlen($reply));
-        sendMessage($reply. ".", $chat, $debug, MD);
-        break;
-    case "/ch":
-    case "/ch@FlimFlamBot":
-        $count = $_SESSION['count'];
-        if (!$count) {$count = 1;}
-        if ($count % 3 != 0) {
-          $wc = rand(3,5);
-          $dc = rand (0,1);
-          $reply = getPwGen("format=sentences&pc=1&wc=" . $wc . "&dc=" .$dc);
-          if ($wc == 5) {
-            $short_reply = explode(" ",$reply);
-            $size = sizeof($short_reply);
-            switch(rand(1,7)) {
-              case 1:
-                  $intro = "За ";
-                  $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
-                  break;
-              case 2:
-                  $intro = "Ну, за ";
-                  $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
-                  break;
-              case 3:
-                  $intro = "Жахнем за ";
-                  $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
-                  break;
-              case 4:
-                  $intro = "Опрокинем за ";
-                  $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
-                  break;
-              case 5:
-                  $intro = "Тяпнем по маленькой за ";
-                  $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
-                  break;
-              case 6:
-                  $intro = "Хлопнем за ";
-                  $reply = $short_reply[$size-2] . " " . $short_reply[$size-1];
-                  break;
-              case 7:
-                  $intro = "Выпьем за то, что ";
-                  break;
-            }
-          } else {
-            $intro = "Выпьем за то, что ";
-          }
-          $reply = $intro . trim($reply) . "!";
-        } else {
-          $reply = "Выпьем за любовь!";
-        }
-        sendMessage("_" . $reply . "_", $chat, $debug, MD);
-        $count++;
-        $_SESSION['count'] = $count;
-        echo $_SESSION['count'];
-        break;
-    default:
-        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat, $debug, MD);
+/*
+function NAME () {
 }
-
-session_write_close();
+*/
 ?>
