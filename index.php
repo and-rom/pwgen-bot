@@ -117,15 +117,17 @@ function processUpdate ($json) {
     if ($update['message']['new_chat_member']) {
       if ($update['message']['new_chat_member']['id'] == BOTID) {
         $event = "bot added to group";
+      } else {
+        $event = "bot is a member of group";
       }
-      $event = "bot is a member of group";
     }
    
     if ($update['message']['left_chat_member']) {
       if ($update['message']['new_chat_member']['id'] == "116320087") {
         $event = "bot deleted from group";
+      } else {
+        $event = "bot is a member of group";
       }
-      //bot is a member of group
     }
    
     if ($update['message']['new_chat_title'] ||
@@ -145,7 +147,7 @@ function processUpdate ($json) {
    
     $entities_type = $update['message']['entities'][0]['type'];
    
-    if ($entities_type = 'bot_command') {
+    if ($entities_type == 'bot_command') {
       $event = "bot command";
       $debug = False;
       $del = "_";
