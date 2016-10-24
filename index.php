@@ -2,6 +2,7 @@
 /*Settings*/
 error_reporting(0);
 mb_internal_encoding("UTF-8");
+date_default_timezone_set('Europe/Moscow');
 ini_set("session.use_cookies", 0);
 ini_set("session.use_only_cookies", 0);
 ini_set("session.use_trans_sid", 1);
@@ -13,6 +14,10 @@ ini_set('session.gc_divisor', 1);
 define(TOKEN, "116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg");
 define(BOTID, "116320087");
 define(DEVID, "62434569");
+
+define (DATE_FORMAT, "Y-m-d H:i:s T");
+
+define(BASEURL, "https://api.telegram.org/bot" . TOKEN . "/");
 
 /*Messages*/
 const START = <<<EOD
@@ -94,81 +99,81 @@ const HELP_PW = <<<EOD
 В парольной фразе круглыми скобками выделены те буквы и цифры, которые используются в пароле.
 EOD;
 
-/* Formats */
+/* Parse modes */
 define (MD,"Markdown");
 define (HTML,"HTML");
 
 function processUpdate ($json) {
   $update = json_decode($json, true);
   if (!empty($json)) {
+    $debug = False;
+    $del = "_";
+
+    $event = "";
+
     $update_id = $update['update_id'];
    
-    $user_id = $update['message']['from']['id'];
-    $user_username = isset($update['message']['from']['username']) ? $update['message']['from']['username'] : "";
-    $user_fname = isset($update['message']['from']['first_name']) ? $update['message']['from']['first_name'] : "";
-    $user_lname = isset($update['message']['from']['last_name']) ?  $update['message']['from']['last_name'] : "";
-   
-    $chat_id = $update['message']['chat']['id'];
-    $chat_type = $update['message']['chat']['type'];
-    $chat_title = $update['message']['chat']['title'];
-   
-    $date = date('Y-m-d H:i:s', $update['message']['date']);
-   
-    if ($update['message']['new_chat_member']) {
-      if ($update['message']['new_chat_member']['id'] == BOTID) {
-        $event = "bot added to group";
-      } else {
-        $event = "bot is a member of group";
+    if (isset($update['callback_query'])) {
+      $callback_query_id = $update['callback_query']['id'];
+      $user_id = $update['callback_query']['from']['id'];
+      $text = $update['callback_query']['data'];
+      if ($user_id == DEVID) {
+        processCommand($user_id, $callback_query_id, $text, $del, $debug);
       }
-    }
-   
-    if ($update['message']['left_chat_member']) {
-      if ($update['message']['new_chat_member']['id'] == "116320087") {
-        $event = "bot deleted from group";
-      } else {
-        $event = "bot is a member of group";
-      }
-    }
-   
-    if ($update['message']['new_chat_title'] ||
-        $update['message']['new_chat_photo'] ||
-        $update['message']['delete_chat_photo']) {
-      $event = "bot is a member of group";
-    }
-
-    
-    if (intval($chat_id) < 0) {
-      $event = "bot is a member of group";
-    }
-    
-   
-    $text = isset($update['message']['text']) ? $update['message']['text'] : "";
-   
-    $entities_type = $update['message']['entities'][0]['type'];
-   
-    if ($entities_type == 'bot_command') {
-      $event = "bot command";
-      $debug = False;
-      $del = "_";
-      processCommand($chat_id, $user_id, $text, $del, $debug);
-    }
-   
-    if (isset($event)) {
       $data = array (
                     "TEL",
-                    $date,
+                    date(DATE_FORMAT),
                     $user_id,
-                    $user_username,
-                    $user_fname . " " . $user_lname,
-                    $chat_id,
-                    $chat_type,
-                    $chat_title,
-                    $event,
-                    $text
+                    "callback_query" . $callback_query_id,
+                    ($text ? $text : "no text")
                   );
       logData($data);
     } else {
-      logData($update,False);
+      $user_id = $update['message']['from']['id'];
+      $user_username = isset($update['message']['from']['username']) ? $update['message']['from']['username'] : "";
+      $user_fname = isset($update['message']['from']['first_name']) ? $update['message']['from']['first_name'] : "no first name";
+      $user_lname = isset($update['message']['from']['last_name']) ?  $update['message']['from']['last_name'] : "no last name";
+   
+      $chat_id = $update['message']['chat']['id'];
+      $chat_type = $update['message']['chat']['type'];
+      $chat_title = isset($update['message']['chat']['title']) ?  $update['message']['chat']['title'] : "";
+
+      if (intval($chat_id) < 0) {
+        if (strpos(file_get_contents("./groups.txt"),strval($chat_id)) === False) {
+          if (isset($update['message']['new_chat_member']) && $update['message']['new_chat_member']['id'] == BOTID) {
+            $event .= "bot added to group";
+            $reply = "Меня добавили в группу " . $chat_title . " (" . $chat_id . ")";
+          } else {
+            $event .= "bot is a member of group";
+            $reply = "Я участник группы " . $chat_title . " (" . $chat_id . ")";
+          }
+          $reply_markup = json_encode(array("inline_keyboard"=>[[array("text"=>"Остаться","callback_data"=>"/stay_" . $chat_id),array("text"=>"Покинуть","callback_data"=>"/leave_" . $chat_id)]]));
+          sendMessage($reply, DEVID, $debug, "", "", $reply_markup);
+        }
+      }
+
+      if ($update['message']['entities'][0]['type'] == 'bot_command') {
+        $event .= " bot command";
+        $text = $update['message']['text'];
+        processCommand($chat_id, $user_id, $text, $del, $debug);
+      }
+   
+      if (isset($event) && !empty($event)) {
+        $data = array ("TEL",
+                       date(DATE_FORMAT, $update['message']['date']),
+                       $user_id,
+                       ($user_username ? $user_username : "no username"),
+                       $user_fname . " " . $user_lname,
+                       $chat_id,
+                       $chat_type,
+                       ($chat_type == "private" ? "private" : $chat_title),
+                       $event,
+                       ($text ? $text : "no text")
+                      );
+        logData($data);
+      } else {
+        logData($update,False);
+      }
     }
   } else {
     exit;
@@ -207,14 +212,13 @@ function processGET ($GET) {
     }
     $data = array (
                     "GET",
-                    date('Y-m-d H:i:s'),
+                    date(DATE_FORMAT),
                     $ip,
                     $_GET['msg'],
                     $chat,
-                    $user,
+                    $user
                   );
     logData($data);
-file_put_contents("./log.txt","\n".var_export($update,true)."\n",FILE_APPEND);
   } else {
     exit;
   }
@@ -238,8 +242,8 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
   switch ($command) {
     case "/start":
     case "/start@FlimFlamBot":
-        sendMessage(START, $chat_id, $debug, MD);
-        break;
+      sendMessage(START, $chat_id, $debug, MD);
+      break;
     case "/help":
     case "/help@FlimFlamBot":
       $reply = prepareHelp($argument);
@@ -260,8 +264,18 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
       $reply = prepareCh($argument, $debug);
       sendMessage("_" . $reply . "_", $chat_id, $debug, MD, $_SESSION['count']);
       break;
+    case "/stay":
+    case "/stay@FlimFlamBot":
+      $reply = stayChat($argument);
+      answerCallbackQuery($reply, $user_id);
+      break;
+    case "/leave":
+    case "/leave@FlimFlamBot":
+      $reply = leaveChat($argument);
+      sendMessage($reply, $chat_id, $debug);
+      break;
     default:
-        sendMessage("Мне не понятно, что ты хотел этим сказать: " . $message, $chat_id, $debug, MD);
+      sendMessage("Такой комманды я не знаю: " . $command, $chat_id, $debug, MD);
   }
   session_write_close();
 }
@@ -365,19 +379,50 @@ function prepareCh ($argument,$debug) {
   return $reply;
 }
 
-function sendMessage($string, $chat, $debug, $format, $extra = "") {
+function sendMessage($text, $chat, $debug=False, $parse_mode="", $extra=NULL, $reply_markup="", $disable_web_page_preview="1", $disable_notification="0") {
 debugEcho("Sendig message");
   if ($debug) {
-    echo $string."\n\n";
-    echo urlencode($string)."\n\n";
-    $request = 'https://api.telegram.org/botTOKEN/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
+    echo $text."\n\n";
+    echo urlencode($text)."\n\n";
+    $reply_markup = ($reply_markup ? "&reply_markup=" . $reply_markup : "");
+    $parse_mode = ($parse_mode ? "&parse_mode=" . $parse_mode : "");
+    $disable_web_page_preview = "&disable_web_page_preview=" . $disable_web_page_preview;
+    $disable_notification = "&disable_notification=" . $disable_notification;
+    $request = 'BASEURL' . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
     echo $request;
     echo $extra;
   } else {
-    $string = urlencode($string);
-    $request = 'https://api.telegram.org/bot' . TOKEN . '/sendMessage?disable_web_page_preview=1&chat_id=' . $chat . '&parse_mode=' . $format . '&text=' . $string;
+    $text = urlencode($text);
+    $reply_markup = ($reply_markup ? "&reply_markup=" . $reply_markup : "");
+    $parse_mode = ($parse_mode ? "&parse_mode=" . $parse_mode : "");
+    $disable_web_page_preview = ($disable_web_page_preview ? "&disable_web_page_preview=" . $disable_web_page_preview : "");
+    $disable_notification = ($disable_notification ? "&disable_notification=" . $disable_notification : "");
+    $request = BASEURL . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
     file_get_contents($request);
   }
+}
+
+function stayChat ($chat_id) {
+  if (strpos(file_get_contents("./groups.txt"),$chat_id) === False) {
+    $result = file_put_contents('./groups.txt', $chat_id . "\n", FILE_APPEND);
+    return ($result ? "Группа сохраненна" : "При сохранении возникла ошибка");
+  } else {
+    return "Группа уже сохраненна";
+  }
+}
+
+function leaveChat ($chat_id) {
+  $request = BASEURL . 'leaveChat?chat_id=' . $chat_id;
+  $json = file_get_contents($request);
+  $reply = json_decode($json, true);
+  return ($reply['ok'] ? "Чат покинут" : $json);
+}
+
+function answerCallbackQuery ($text, $callback_query_id, $show_alert=0) {
+  $text = urlencode($text);
+  $show_alert="&show_alert=".$show_alert;
+  $request = BASEURL . 'answerCallbackQuery?callback_query_id=' . $callback_query_id . '&text=' . $text . $show_alert;
+  $json = file_get_contents($request);
 }
 
 function getPwGen ($params) {
@@ -396,16 +441,10 @@ function debugEcho ($string) {
 function logData ($data, $flag = True) {
   if ($flag) {
     $string = implode(" | ",$data);
-    file_put_contents('./log.txt',"\n".$string,FILE_APPEND);
+    file_put_contents("./log.txt", $string . "\n", FILE_APPEND);
   } else {
-    file_put_contents("./log.txt","\n".var_export($data,true)."\n",FILE_APPEND);
+    file_put_contents("./log.txt", var_export($data,true) . "\n", FILE_APPEND);
   }
-  /*
-  GET string
-  file_put_contents('./log.txt',"\n".var_export($_GET,true)."\n".var_export($ip,true)."\n".date('Y-m-d H:i:s')."\n",FILE_APPEND);
-  JSON string
-  file_put_contents("./log.txt","\n".var_export($update,true)."\n",FILE_APPEND);
-  */
 }
 
 debugEcho("Starting");
