@@ -129,18 +129,19 @@ function processUpdate ($json) {
                   );
       logData($data);
     } else {
-      $user_id = $update['message']['from']['id'];
-      $user_username = isset($update['message']['from']['username']) ? $update['message']['from']['username'] : "";
-      $user_fname = isset($update['message']['from']['first_name']) ? $update['message']['from']['first_name'] : "no first name";
-      $user_lname = isset($update['message']['from']['last_name']) ?  $update['message']['from']['last_name'] : "no last name";
+      $message = isset($update['edited_message']) ? "edited_message" : "message";
+      $user_id = $update[$message]['from']['id'];
+      $user_username = isset($update[$message]['from']['username']) ? $update[$message]['from']['username'] : "";
+      $user_fname = isset($update[$message]['from']['first_name']) ? $update[$message]['from']['first_name'] : "no first name";
+      $user_lname = isset($update[$message]['from']['last_name']) ?  $update[$message]['from']['last_name'] : "no last name";
    
-      $chat_id = $update['message']['chat']['id'];
-      $chat_type = $update['message']['chat']['type'];
-      $chat_title = isset($update['message']['chat']['title']) ?  $update['message']['chat']['title'] : "";
+      $chat_id = $update[$message]['chat']['id'];
+      $chat_type = $update[$message]['chat']['type'];
+      $chat_title = isset($update[$message]['chat']['title']) ?  $update[$message]['chat']['title'] : "";
 
       if (intval($chat_id) < 0) {
         if (strpos(file_get_contents("./groups.txt"),strval($chat_id)) === False) {
-          if (isset($update['message']['new_chat_member']) && $update['message']['new_chat_member']['id'] == BOTID) {
+          if (isset($update[$message]['new_chat_member']) && $update[$message]['new_chat_member']['id'] == BOTID) {
             $event .= "bot added to group";
             $reply = "Меня добавили в группу " . $chat_title . " (" . $chat_id . ")";
           } else {
@@ -152,15 +153,15 @@ function processUpdate ($json) {
         }
       }
 
-      if ($update['message']['entities'][0]['type'] == 'bot_command') {
+      if ($update[$message]['entities'][0]['type'] == 'bot_command') {
         $event .= " bot command";
-        $text = $update['message']['text'];
+        $text = $update[$message]['text'];
         processCommand($chat_id, $user_id, $text, $del, $debug);
       }
    
       if (isset($event) && !empty($event)) {
         $data = array ("TEL",
-                       date(DATE_FORMAT, $update['message']['date']),
+                       date(DATE_FORMAT, $update[$message]['date']),
                        $user_id,
                        ($user_username ? $user_username : "no username"),
                        $user_fname . " " . $user_lname,
