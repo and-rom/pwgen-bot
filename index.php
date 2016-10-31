@@ -310,8 +310,8 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
     $argument='';
   }
 
-  debugEcho("Комманда " . $command);
-  debugEcho("Аргумент " . $argument);
+  debugEcho("Комманда: " . $command);
+  debugEcho("Аргумент: " . $argument);
 
   switch ($command) {
     case "/start":
@@ -346,7 +346,6 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
     case "/ch@Flimflambot":
     case "/ch@flimflambot":
       $reply = prepareCh($argument, $debug);
-      //sendMessage("_" . $reply . "_", $chat_id, $debug, MD, $_SESSION['count']);
       if (is_array($reply)) {
         debugEcho("It's array");
         if (isset($reply[0])) {
@@ -494,43 +493,34 @@ function prepareCh ($argument,$debug) {
 
 function sendMessage($text, $chat, $debug=False, $parse_mode="", $extra=NULL, $reply_markup="", $disable_web_page_preview="1", $disable_notification="0") {
   debugEcho("Sendig message");
+  $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
+  $parse_mode = $parse_mode ? "&parse_mode=" . $parse_mode : "";
+  $disable_web_page_preview = $disable_web_page_preview ? "&disable_web_page_preview=" . $disable_web_page_preview : "";
+  $disable_notification = $disable_notification ? "&disable_notification=" . $disable_notification : "";
   if ($debug) {
     echo $text . "\n";
-    debugEcho(urlencode($text));
-    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
-    $parse_mode = $parse_mode ? "&parse_mode=" . $parse_mode : "";
-    $disable_web_page_preview = $disable_web_page_preview ? "&disable_web_page_preview=" . $disable_web_page_preview : "";
-    $disable_notification = $disable_notification ? "&disable_notification=" . $disable_notification : "";
     $request = 'BASEURL' . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
     debugEcho($request);
     debugEcho($extra);
   } else {
     $text = urlencode($text);
-    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
-    $parse_mode = $parse_mode ? "&parse_mode=" . $parse_mode : "";
-    $disable_web_page_preview = $disable_web_page_preview ? "&disable_web_page_preview=" . $disable_web_page_preview : "";
-    $disable_notification = $disable_notification ? "&disable_notification=" . $disable_notification : "";
     $request = BASEURL . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
     file_get_contents($request);
   }
 }
 
 function sendSticker($sticker, $chat, $debug=False, $extra=NULL, $reply_markup="", $disable_notification="0", $reply_to_message_id=NULL) {
-debugEcho("Sendig sticker");
+  debugEcho("Sendig sticker");
+  $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
+  $disable_notification = "&disable_notification=" . $disable_notification;
+  $reply_to_message_id = isset($reply_to_message_id) ? "&reply_to_message_id=" . $reply_to_message_id : "";
   if ($debug) {
     echo "Sticker id: " . $sticker . "\n";
-    debugEcho(urlencode($sticker));
-    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
-    $disable_notification = "&disable_notification=" . $disable_notification;
-    $reply_to_message_id = isset($reply_to_message_id) ? "&reply_to_message_id=" . $reply_to_message_id : "";
     $request = 'BASEURL' . 'sendSticker?chat_id=' . $chat . '&sticker=' . $sticker . $reply_markup . $reply_to_message_id . $disable_notification;
     debugEcho($request);
     debugEcho($extra);
   } else {
     $text = urlencode($text);
-    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
-    $disable_notification = "&disable_notification=" . $disable_notification;
-    $reply_to_message_id = isset($reply_to_message_id) ? "&reply_to_message_id=" . $reply_to_message_id : "";
     $request = BASEURL . 'sendSticker?chat_id=' . $chat . '&sticker=' . $sticker . $reply_markup . $reply_to_message_id . $disable_notification;
     file_get_contents($request);
   }
