@@ -17,7 +17,9 @@ define(DEVID, "62434569");
 
 define (DATE_FORMAT, "Y-m-d H:i:s T");
 
-define(BASEURL, "https://api.telegram.org/bot" . TOKEN . "/");
+define (DEL, "_");
+
+define (BASEURL, "https://api.telegram.org/bot" . TOKEN . "/");
 
 /*Messages*/
 const START = <<<EOD
@@ -28,7 +30,7 @@ _Привет!_
 Отправь мне /help, и я подскажу как со мной общаться.
 
 Понравился бот или есть предложения?
-[Оставь свой отзыв!](https://telegram.me/storebot?start=flimflambot)
+[https://telegram.me/storebot?start=flimflambot](https://telegram.me/storebot?start=flimflambot)
 EOD;
 
 const HELP = <<<EOD
@@ -40,7 +42,7 @@ const HELP = <<<EOD
 Подробнее о команде /pw: /help\\_pw.
 
 Понравился бот или есть предложения?
-[Оставь свой отзыв!](https://telegram.me/storebot?start=flimflambot)
+[https://telegram.me/storebot?start=flimflambot](https://telegram.me/storebot?start=flimflambot)
 EOD;
 
 const HELP_ABOUT = <<<EOD
@@ -103,7 +105,12 @@ EOD;
 define (MD,"Markdown");
 define (HTML,"HTML");
 
+/* Globals */
+$debug = False;
+
 function processUpdate ($json) {
+  global $debug;
+  $debug = False;
   $update = json_decode($json, true);
   if (!empty($json)) {
 
@@ -143,57 +150,57 @@ function processMessage ($message) {
   if (isset($message['text'])) {
     $text = $message['text'];
     if ($message['entities'][0]['type'] == 'bot_command') {
-      processCommand($chat_id, $user_id, $text, "_", False);
+      processCommand($chat_id, $user_id, $text);
       $type = "command";
     } else {
       $reply = "Я понимаю только комманды. Например, /help";
-      sendMessage($reply, $chat_id, False, MD);
+      sendMessage($reply, $chat_id, MD);
       $text = preg_replace("/[\n\r]/"," ",$text);
       $text = (strlen($text) > 50) ? substr($text,0,50).'...' : $text;
       $type = "text";
     }
   } else if (isset($message['audio'])) {
     $reply = "Спасибо. Послушаю на на досуге.";
-    sendMessage($reply, $chat_id, False, MD);
+    sendMessage($reply, $chat_id, MD);
     $type = "audio";
   } else if (isset($message['document'])) {
     $reply = "Я понимаю только комманды. Например, /help";
-    sendMessage($reply, $chat_id, False, MD);
+    sendMessage($reply, $chat_id, MD);
     $type = "document";
   } else if (isset($message['game'])) {
-    $reply = "Поиграй с кем-нибудь другим. Я очень занят. Придумываю всякий бред.";
-    sendMessage($reply, $chat_id, False, MD);
+    $reply = "Я очень занят. Придумываю всякий бред.";
+    sendMessage($reply, $chat_id, MD);
     $type = "game";
   } else if (isset($message['photo'])) {
     $reply = "Прикольная картинка.";
-    sendMessage($reply, $chat_id, False, MD);
+    sendMessage($reply, $chat_id, MD);
     $type = "photo";
   } else if (isset($message['sticker'])) {
     $text = $message['sticker']['emoji'] . " " . json_encode($message['sticker']['emoji']);
     $reply = "Отличный стикер. Мне нравится этот набор. " . json_decode('"\ud83d\udc4d"');
-    sendMessage($reply, $chat_id, False, "");
+    sendMessage($reply, $chat_id, MD);
     $type = "sticker";
   } else if (isset($message['video'])) {
     $reply = "Спасибо. Посмотрю на на досуге.";
-    sendMessage($reply, $chat_id, False, MD);
+    sendMessage($reply, $chat_id, MD);
     $type = "video";
   } else if (isset($message['voice'])) {
-    $reply = "Лучше текстоые комманды шли. Например, /help";
-    sendMessage($reply, $chat_id, False, MD);
+    $reply = "Я понимаю только комманды. Например, /help";
+    sendMessage($reply, $chat_id, MD);
     $type = "voice";
   } else if (isset($message['contact'])) {
     $reply = "И кто это?";
-    sendMessage($reply, $chat_id, False, MD);
+    sendMessage($reply, $chat_id, MD);
     $type = "contact";
   } else if (isset($message['location']) && !isset($message['venue'])) {
     $text = $message['location']['latitude'] . " " . $message['location']['longitude'];
     $reply = "Чего там интересного?";
-    sendMessage($reply, $chat_id, False, MD);
+    sendMessage($reply, $chat_id, MD);
     $type = "location";
   } else if (isset($message['venue'])) {
     $text = $message['venue']['title'] . "; " . $message['venue']['address'] . "; " . "(" . $message['location']['latitude'] . " " . $message['location']['longitude'] . ")";
-    $reply = "Давай в другой раз встретимся там. Я очень занят. Придумываю всякий бред.";
-    sendMessage($reply, $chat_id, False, MD);
+    $reply = "Я очень занят. Придумываю всякий бред.";
+    sendMessage($reply, $chat_id, MD);
     $type = "venue";
   } else  if (!$group_event){
     //test if it'a system message
@@ -230,7 +237,7 @@ function processCallbakQuery($callback_query) {
   $user_id = $callback_query['from']['id'];
   $text = $callback_query['data'];
   if ($user_id == DEVID) {
-    processCommand($user_id, $callback_query_id, $text, "_", False);
+    processCommand($user_id, $callback_query_id, $text);
   }
   $log_data = array ("TEL",
                      date(DATE_FORMAT),
@@ -249,12 +256,13 @@ function processGroupEvent($chat_id, $chat_type, $chat_title, $new_chat_member_i
       $reply = "Я участник группы " . $chat_title . " (" . $chat_id . ")";
     }
     $reply_markup = json_encode(array("inline_keyboard"=>[[array("text"=>"Остаться","callback_data"=>"/stay_" . $chat_id),array("text"=>"Покинуть","callback_data"=>"/leave_" . $chat_id)]]));
-    sendMessage($reply, DEVID, $debug, "", "", $reply_markup);
-    //log unauthorized group event
+    sendMessage($reply, DEVID, "", $reply_markup);
   }
 }
 
 function processGET ($GET) {
+  global $debug;
+  $debug = True;
   debugEcho("Processing GET");
   header("Content-Type: text/plain");
   if (isset($_GET['msg']) && !empty($_GET['msg'])) {
@@ -277,8 +285,7 @@ function processGET ($GET) {
       $message = "/" . $_GET['msg'];
       $chat    = isset($_GET['chat']) ? $_GET['chat'] : "";
       $user    = isset($_GET['user']) ? $_GET['user'] : "";
-
-      processCommand($chat, $user, $message, "_", True);
+      processCommand($chat, $user, $message);
     }
     $data = array (
                     "GET",
@@ -295,7 +302,8 @@ function processGET ($GET) {
   }
 }
 
-function processCommand ($chat_id, $user_id, $text, $del, $debug) {
+function processCommand ($chat_id, $user_id, $text) {
+  global $debug;
   debugEcho("Processing message");
   debugEcho(($debug ? "it's debug" : "it's not debug"));
   session_id($chat_id);
@@ -303,8 +311,8 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
   session_cache_expire(1);
   session_start();
 
-  if (strpos($text, $del) !== false) {
-    list($command, $argument) = explode($del, $text, 2);
+  if (strpos($text, DEL) !== false) {
+    list($command, $argument) = explode(DEL, $text, 2);
   } else {
     $command=$text;
     $argument='';
@@ -318,46 +326,39 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
     case "/start@FlimFlamBot":
     case "/start@Flimflambot":
     case "/start@flimflambot":
-      sendMessage(START, $chat_id, $debug, MD);
+      sendMessage(START, $chat_id, MD);
       break;
     case "/help":
     case "/help@FlimFlamBot":
     case "/help@Flimflambot":
     case "/help@flimflamBot":
       $reply = prepareHelp($argument);
-      sendMessage($reply, $chat_id, $debug, MD);
+      sendMessage($reply, $chat_id, MD);
       break;
     case "/pw":
     case "/pw@FlimFlamBot":
     case "/pw@Flimflambot":
     case "/pw@flimflambot":
       $reply = preparePw($argument);
-      sendMessage($reply, $chat_id, $debug, MD);
+      sendMessage($reply, $chat_id, MD);
       break;
     case "/ff":
     case "/ff@FlimFlamBot":
     case "/ff@Flimflambot":
     case "/ff@flimflambot":
       $reply = prepareFf($argument);
-      sendMessage($reply. ".", $chat_id, $debug, MD);
+      sendMessage($reply. ".", $chat_id, MD);
       break;
     case "/ch":
     case "/ch@FlimFlamBot":
     case "/ch@Flimflambot":
     case "/ch@flimflambot":
-      $reply = prepareCh($argument, $debug);
+      $reply = prepareCh($argument);
       if (is_array($reply)) {
-        debugEcho("It's array");
-        if (isset($reply[0])) {
-          debugEcho("reply[0] is set");
-          sendSticker($reply[0], $chat_id, $debug);
-        }
-        if (isset($reply[1])) {
-          sendMessage("_" . $reply[1] . "_", $chat_id, $debug, MD, $_SESSION['count']);
-        }
+        if (isset($reply[0])) {sendSticker($reply[0], $chat_id);}
+        if (isset($reply[1])) {sendMessage("_" . $reply[1] . "_", $chat_id, MD);}
       } else {
-        debugEcho("It's not array");
-        sendMessage("_" . $reply . "_", $chat_id, $debug, MD, $_SESSION['count']);
+        sendMessage("_" . $reply . "_", $chat_id, MD);
       }
       break;
     case "/stay":
@@ -372,11 +373,11 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
     case "/leave@Flimflambot":
     case "/leave@flimflambot":
       $reply = leaveChat($argument);
-      sendMessage($reply, $chat_id, $debug);
+      sendMessage($reply, $chat_id);
       answerCallbackQuery($user_id);
       break;
     default:
-      sendMessage("Такой комманды я не знаю: \"" . $command . "\"", $chat_id, $debug, MD);
+      sendMessage("Такой комманды я не знаю: \"" . $command . "\"", $chat_id, MD);
   }
   session_write_close();
 }
@@ -421,16 +422,9 @@ function prepareFf ($argument) {
   return $reply;
 }
 
-function prepareCh ($argument,$debug) {
+function prepareCh ($argument) {
   debugEcho("Preparing ch");
-  if (!isset($_SESSION['count'])) {
-    debugEcho("SESSION Count is not set. Setting it with 1.");
-    $_SESSION['count'] = 1;
-  } else {
-    debugEcho("SESSION Count is set. _SESSION[count]=" . $_SESSION['count']);
-    debugEcho("Count is set. _SESSION[count]=" . $count);
-  }
-   
+  if (!isset($_SESSION['count'])) {$_SESSION['count'] = 1;}
   debugEcho("( " . $_SESSION['count'] . " )");
    
   if ($_SESSION['count'] % 3 != 0) {
@@ -491,7 +485,8 @@ function prepareCh ($argument,$debug) {
   return $reply;
 }
 
-function sendMessage($text, $chat, $debug=False, $parse_mode="", $extra=NULL, $reply_markup="", $disable_web_page_preview="1", $disable_notification="0") {
+function sendMessage($text, $chat, $parse_mode="", $reply_markup="", $disable_web_page_preview="1", $disable_notification="0") {
+  global $debug;
   debugEcho("Sendig message");
   $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
   $parse_mode = $parse_mode ? "&parse_mode=" . $parse_mode : "";
@@ -499,9 +494,6 @@ function sendMessage($text, $chat, $debug=False, $parse_mode="", $extra=NULL, $r
   $disable_notification = $disable_notification ? "&disable_notification=" . $disable_notification : "";
   if ($debug) {
     echo $text . "\n";
-    $request = 'BASEURL' . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
-    debugEcho($request);
-    debugEcho($extra);
   } else {
     $text = urlencode($text);
     $request = BASEURL . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
@@ -509,16 +501,14 @@ function sendMessage($text, $chat, $debug=False, $parse_mode="", $extra=NULL, $r
   }
 }
 
-function sendSticker($sticker, $chat, $debug=False, $extra=NULL, $reply_markup="", $disable_notification="0", $reply_to_message_id=NULL) {
+function sendSticker($sticker, $chat, $reply_markup="", $disable_notification="0", $reply_to_message_id=NULL) {
+  global $debug;
   debugEcho("Sendig sticker");
   $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
   $disable_notification = "&disable_notification=" . $disable_notification;
   $reply_to_message_id = isset($reply_to_message_id) ? "&reply_to_message_id=" . $reply_to_message_id : "";
   if ($debug) {
     echo "Sticker id: " . $sticker . "\n";
-    $request = 'BASEURL' . 'sendSticker?chat_id=' . $chat . '&sticker=' . $sticker . $reply_markup . $reply_to_message_id . $disable_notification;
-    debugEcho($request);
-    debugEcho($extra);
   } else {
     $text = urlencode($text);
     $request = BASEURL . 'sendSticker?chat_id=' . $chat . '&sticker=' . $sticker . $reply_markup . $reply_to_message_id . $disable_notification;
@@ -539,7 +529,7 @@ function leaveChat ($chat_id) {
   $request = BASEURL . 'leaveChat?chat_id=' . $chat_id;
   $json = file_get_contents($request);
   $reply = json_decode($json, true);
-  return ($reply['ok'] ? "Чат покинут" : $json);
+  return $reply['ok'] ? "Чат покинут" : $json;
 }
 
 function answerCallbackQuery ($callback_query_id, $text=NULL, $show_alert=NULL) {
@@ -559,7 +549,7 @@ function getPwGen ($params) {
 }
 
 function debugEcho ($string) {
-  //echo $string . "\n";
+  echo $string . "\n";
 }
 
 function logData ($data, $flag = True) {
