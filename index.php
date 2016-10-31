@@ -366,7 +366,7 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
     case "/stay@Flimflambot":
     case "/stay@flimflambot":
       $reply = stayChat($argument);
-      answerCallbackQuery($reply, $user_id);
+      answerCallbackQuery($user_id,$reply);
       break;
     case "/leave":
     case "/leave@FlimFlamBot":
@@ -374,6 +374,7 @@ function processCommand ($chat_id, $user_id, $text, $del, $debug) {
     case "/leave@flimflambot":
       $reply = leaveChat($argument);
       sendMessage($reply, $chat_id, $debug);
+      answerCallbackQuery($user_id);
       break;
     default:
       sendMessage("Такой комманды я не знаю: \"" . $command . "\"", $chat_id, $debug, MD);
@@ -496,40 +497,40 @@ function sendMessage($text, $chat, $debug=False, $parse_mode="", $extra=NULL, $r
   if ($debug) {
     echo $text . "\n";
     debugEcho(urlencode($text));
-    $reply_markup = ($reply_markup ? "&reply_markup=" . $reply_markup : "");
-    $parse_mode = ($parse_mode ? "&parse_mode=" . $parse_mode : "");
-    $disable_web_page_preview = "&disable_web_page_preview=" . $disable_web_page_preview;
-    $disable_notification = "&disable_notification=" . $disable_notification;
+    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
+    $parse_mode = $parse_mode ? "&parse_mode=" . $parse_mode : "";
+    $disable_web_page_preview = $disable_web_page_preview ? "&disable_web_page_preview=" . $disable_web_page_preview : "";
+    $disable_notification = $disable_notification ? "&disable_notification=" . $disable_notification : "";
     $request = 'BASEURL' . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
     debugEcho($request);
     debugEcho($extra);
   } else {
     $text = urlencode($text);
-    $reply_markup = ($reply_markup ? "&reply_markup=" . $reply_markup : "");
-    $parse_mode = ($parse_mode ? "&parse_mode=" . $parse_mode : "");
-    $disable_web_page_preview = ($disable_web_page_preview ? "&disable_web_page_preview=" . $disable_web_page_preview : "");
-    $disable_notification = ($disable_notification ? "&disable_notification=" . $disable_notification : "");
+    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
+    $parse_mode = $parse_mode ? "&parse_mode=" . $parse_mode : "";
+    $disable_web_page_preview = $disable_web_page_preview ? "&disable_web_page_preview=" . $disable_web_page_preview : "";
+    $disable_notification = $disable_notification ? "&disable_notification=" . $disable_notification : "";
     $request = BASEURL . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
     file_get_contents($request);
   }
 }
 
-function sendSticker($sticker, $chat, $debug=False, $extra=NULL, $reply_markup="", $disable_notification="0", $reply_to_message_id="") {
+function sendSticker($sticker, $chat, $debug=False, $extra=NULL, $reply_markup="", $disable_notification="0", $reply_to_message_id=NULL) {
 debugEcho("Sendig sticker");
   if ($debug) {
     echo "Sticker id: " . $sticker . "\n";
     debugEcho(urlencode($sticker));
-    $reply_markup = ($reply_markup ? "&reply_markup=" . $reply_markup : "");
+    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
     $disable_notification = "&disable_notification=" . $disable_notification;
-    $reply_to_message_id = "&reply_to_message_id=" . $reply_to_message_id;
+    $reply_to_message_id = isset($reply_to_message_id) ? "&reply_to_message_id=" . $reply_to_message_id : "";
     $request = 'BASEURL' . 'sendSticker?chat_id=' . $chat . '&sticker=' . $sticker . $reply_markup . $reply_to_message_id . $disable_notification;
     debugEcho($request);
     debugEcho($extra);
   } else {
     $text = urlencode($text);
-    $reply_markup = ($reply_markup ? "&reply_markup=" . $reply_markup : "");
+    $reply_markup = $reply_markup ? "&reply_markup=" . $reply_markup : "";
     $disable_notification = "&disable_notification=" . $disable_notification;
-    $reply_to_message_id = "&reply_to_message_id=" . $reply_to_message_id;
+    $reply_to_message_id = isset($reply_to_message_id) ? "&reply_to_message_id=" . $reply_to_message_id : "";
     $request = BASEURL . 'sendSticker?chat_id=' . $chat . '&sticker=' . $sticker . $reply_markup . $reply_to_message_id . $disable_notification;
     file_get_contents($request);
   }
@@ -551,10 +552,10 @@ function leaveChat ($chat_id) {
   return ($reply['ok'] ? "Чат покинут" : $json);
 }
 
-function answerCallbackQuery ($text, $callback_query_id, $show_alert=0) {
-  $text = urlencode($text);
-  $show_alert="&show_alert=".$show_alert;
-  $request = BASEURL . 'answerCallbackQuery?callback_query_id=' . $callback_query_id . '&text=' . $text . $show_alert;
+function answerCallbackQuery ($callback_query_id, $text=NULL, $show_alert=NULL) {
+  $text = isset($text) ? "&text=" . urlencode($text) : "";
+  $show_alert = isset($show_alert) ? "&show_alert=" . $show_alert : "";
+  $request = BASEURL . "answerCallbackQuery?callback_query_id=" . $callback_query_id . $text . $show_alert;
   $json = file_get_contents($request);
 }
 
