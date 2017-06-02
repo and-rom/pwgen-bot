@@ -125,7 +125,7 @@ function processUpdate ($json) {
                          date(DATE_FORMAT, $message['date']),
                          $update['channel_post']['chat']['id'],
                          "channel",
-                         $update['channel_post']['chat']['title'],
+                         $update['channel_post']['chat']['title']
                       );
       logData($log_data);
       processGroupEvent($update['channel_post']['chat']['id'],"",$update['channel_post']['chat']['title'],"","");
