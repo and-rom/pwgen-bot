@@ -128,7 +128,7 @@ function processUpdate ($json) {
                          $update['channel_post']['chat']['title'],
                       );
       logData($log_data);
-      processGroupEvent($update['channel_post']['chat']['id'],"",$update['channel_post']['chat']['title'],"","")
+      processGroupEvent($update['channel_post']['chat']['id'],"",$update['channel_post']['chat']['title'],"","");
     } else {
       //inline_query or chosen_inline_result
       logData($update, False);
