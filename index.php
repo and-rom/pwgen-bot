@@ -46,7 +46,7 @@ const HELP = <<<EOD
 EOD;
 
 const HELP_ABOUT = <<<EOD
-Бот предназначен для генерации случайных паролей любого уровня сложности, которые формируются на основе легко запоминающихся парольных фраз. 
+Бот предназначен для генерации случайных паролей любого уровня сложности, которые формируются на основе легко запоминающихся парольных фраз.
 
 Поскольку пароль, состоящий из набора случайных символов, запомнить довольно трудно, бот формирует парольную фразу, из которой по определенному правилу образуется сам пароль.
 
@@ -62,7 +62,7 @@ const HELP_ABOUT = <<<EOD
 Пароль, образованный из парольной фразы, начинается с числа, если оно задано, затем включает N первых букв от каждого из M слов парольной фразы без пробелов.
 Параметры N, M, количество цифр в числе и регистр первых букв каджого слова задаются как аргумент команды /pw.
 
-При вводе пароля следует использовать латинскую раскладку клавиатуры с учетом регистра, так как первая буква каждого слова парольной фразы может быть в верхнем или нижнем регистрах 
+При вводе пароля следует использовать латинскую раскладку клавиатуры с учетом регистра, так как первая буква каждого слова парольной фразы может быть в верхнем или нижнем регистрах
 
 Например, если для пароля задано использование двузначного числа, четырех слов и четырех букв от каждого слова парольной фразы, а также верхний регистр первых букв каждого слова, пароль и парольная фраза могут выглядеть следующим образом:
 Команда - /pw\\_4241
@@ -120,6 +120,15 @@ function processUpdate ($json) {
       processMessage($update['edited_message']);
     } else if (isset($update['callback_query'])) {
       processCallbakQuery($update['callback_query']);
+    } else if (isset($update['channel_post'])) {
+      $log_data = array ("TEL",
+                         date(DATE_FORMAT, $message['date']),
+                         $update['channel_post']['chat']['id'],
+                         "channel",
+                         $update['channel_post']['chat']['title'],
+                      );
+      logData($log_data);
+      processGroupEvent($update['channel_post']['chat']['id'],"",$update['channel_post']['chat']['title'],"","")
     } else {
       //inline_query or chosen_inline_result
       logData($update, False);
@@ -135,7 +144,7 @@ function processMessage ($message) {
   $user_username = isset($message['from']['username']) ? $message['from']['username'] : "no username";
   $user_fname = isset($message['from']['first_name']) ? $message['from']['first_name'] : "no first name";
   $user_lname = isset($message['from']['last_name']) ?  $message['from']['last_name'] : "no last name";
-   
+
   $chat_id = $message['chat']['id'];
   $chat_type = $message['chat']['type'];
   $chat_title = $chat_type != "private" ? $message['chat']['title'] : "private";
@@ -426,7 +435,7 @@ function prepareCh ($argument) {
   debugEcho("Preparing ch");
   if (!isset($_SESSION['count'])) {$_SESSION['count'] = 1;}
   debugEcho("( " . $_SESSION['count'] . " )");
-   
+
   if ($_SESSION['count'] % 3 != 0) {
     $wc = rand(3,5);
     $dc = rand (0,1);
