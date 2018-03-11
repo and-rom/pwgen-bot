@@ -549,7 +549,7 @@ function answerCallbackQuery ($callback_query_id, $text=NULL, $show_alert=NULL) 
 }
 
 function getPwGen ($params) {
-  $pwgenURL="http://androm.ru/pwgen/passwordGenerator.php?";
+  $pwgenURL="https://androm.ru/pwgen/passwordGenerator.php?";
   $curl = curl_init($pwgenURL . $params);
   curl_setopt($curl, CURLOPT_RETURNTRANSFER,1);
   $result = curl_exec($curl);
