@@ -554,8 +554,18 @@ function makeRequest ($request) {
 }
 */
 
+function generateRandomProxy($length = 5) {
+  $characters = 'abcdefghijklmnopqrstuvwxyz';
+  $charactersLength = strlen($characters);
+  $randomString = '';
+  for ($i = 0; $i < $5; $i++) {
+      $randomString .= $characters[rand(0, $charactersLength - 1)];
+  }
+  return "telegram:telegram@".$randomString.".tgproxy.me:1080";
+}
+
 function makeRequest ($request) {
-  $proxy = "telegram:telegram@eqtug.tgproxy.me:1080";
+  $proxy = generateRandomProxy();
 
   if( $ch = curl_init ()) {
     curl_setopt ($ch, CURLOPT_URL, $request);
