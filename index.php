@@ -11,15 +11,15 @@ ini_set('session.gc_max_lifetime', 600);
 ini_set('session.gc_probability', 1);
 ini_set('session.gc_divisor', 1);
 
-define(TOKEN, "116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg");
-define(BOTID, "116320087");
-define(DEVID, "62434569");
+define('TOKEN', "116320087:AAEkJ-wLHJE_VMYOEELKavO8162zdZScJbg");
+define('BOTID', "116320087");
+define('DEVID', "62434569");
 
-define (DATE_FORMAT, "Y-m-d H:i:s T");
+define ('DATE_FORMAT', "Y-m-d H:i:s T");
 
-define (DEL, "_");
+define ('DEL', "_");
 
-define (BASEURL, "https://api.telegram.org/bot" . TOKEN . "/");
+define ('BASEURL', "https://api.telegram.org/bot" . TOKEN . "/");
 
 /*Messages*/
 const START = <<<EOD
@@ -102,8 +102,8 @@ const HELP_PW = <<<EOD
 EOD;
 
 /* Parse modes */
-define (MD,"Markdown");
-define (HTML,"HTML");
+define ('MD',"Markdown");
+define ('HTML',"HTML");
 
 /* Globals */
 $debug = False;
@@ -506,7 +506,7 @@ function sendMessage($text, $chat, $parse_mode="", $reply_markup="", $disable_we
   } else {
     $text = urlencode($text);
     $request = BASEURL . 'sendMessage?chat_id=' . $chat . '&text=' . $text . $reply_markup . $parse_mode . $disable_web_page_preview . $disable_notification;
-    file_get_contents($request);
+    makeRequest($request);
   }
 }
 
@@ -521,7 +521,7 @@ function sendSticker($sticker, $chat, $reply_markup="", $disable_notification="0
   } else {
     $text = urlencode($text);
     $request = BASEURL . 'sendSticker?chat_id=' . $chat . '&sticker=' . $sticker . $reply_markup . $reply_to_message_id . $disable_notification;
-    file_get_contents($request);
+    makeRequest($request);
   }
 }
 
@@ -536,7 +536,7 @@ function stayChat ($chat_id) {
 
 function leaveChat ($chat_id) {
   $request = BASEURL . 'leaveChat?chat_id=' . $chat_id;
-  $json = file_get_contents($request);
+  $json = makeRequest($request);
   $reply = json_decode($json, true);
   return $reply['ok'] ? "Чат покинут" : $json;
 }
@@ -545,7 +545,34 @@ function answerCallbackQuery ($callback_query_id, $text=NULL, $show_alert=NULL) 
   $text = isset($text) ? "&text=" . urlencode($text) : "";
   $show_alert = isset($show_alert) ? "&show_alert=" . $show_alert : "";
   $request = BASEURL . "answerCallbackQuery?callback_query_id=" . $callback_query_id . $text . $show_alert;
-  $json = file_get_contents($request);
+  $json = makeRequest($request);
+}
+
+/*
+function makeRequest ($request) {
+  return file_get_contents($request);
+}
+*/
+
+function makeRequest ($request) {
+  $proxy = "telegram:telegram@eqtug.tgproxy.me:1080";
+
+  if( $ch = curl_init ()) {
+    curl_setopt ($ch, CURLOPT_URL, $request);
+    curl_setopt ($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt ($ch, CURLOPT_PROXY, trim($proxy));
+    curl_setopt ($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5_HOSTNAME);
+    curl_setopt ($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    $result = curl_exec($ch);
+    if($result!==FALSE) {
+      return $result;
+    } else {
+      //echo curl_errno ($ch);
+    }
+    curl_close ($ch);
+  } else {
+    //echo "???";
+  }
 }
 
 function getPwGen ($params) {
