@@ -11,6 +11,8 @@ ini_set('session.gc_max_lifetime', 600);
 ini_set('session.gc_probability', 1);
 ini_set('session.gc_divisor', 1);
 
+require_once("config.php");
+
 define('BOTID', "116320087");
 define('DEVID', "62434569");
 
