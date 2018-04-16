@@ -1,1 +1,1 @@
-config.php filter=crypt
+config.php filter=crypt diff=crypt
