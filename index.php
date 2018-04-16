@@ -554,11 +554,11 @@ function makeRequest ($request) {
 }
 */
 
-function generateRandomProxy($length = 5) {
+function generateRandomProxy() {
   $characters = 'abcdefghijklmnopqrstuvwxyz';
   $charactersLength = strlen($characters);
   $randomString = '';
-  for ($i = 0; $i < $5; $i++) {
+  for ($i = 0; $i < 5; $i++) {
       $randomString .= $characters[rand(0, $charactersLength - 1)];
   }
   return "telegram:telegram@".$randomString.".tgproxy.me:1080";
