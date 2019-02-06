@@ -555,6 +555,7 @@ function makeRequest ($request) {
 }
 */
 
+/*
 function generateRandomProxy() {
   $characters = 'abcdefghijklmnopqrstuvwxyz';
   $charactersLength = strlen($characters);
@@ -564,9 +565,12 @@ function generateRandomProxy() {
   }
   return "telegram:telegram@".$randomString.".tgproxy.me:1080";
 }
+*/
 
 function makeRequest ($request) {
-  $proxy = generateRandomProxy();
+  //$proxy = generateRandomProxy();
+  //$proxy = "104.219.251.135:13946";
+  $proxy = "127.0.0.1:9050";
 
   if( $ch = curl_init ()) {
     curl_setopt ($ch, CURLOPT_URL, $request);
@@ -579,10 +583,24 @@ function makeRequest ($request) {
       return $result;
     } else {
       //echo curl_errno ($ch);
+      if($errno = curl_errno($ch)) {
+        $error_message = curl_strerror($errno);
+        logData(array ("TEL",
+                     date(DATE_FORMAT),
+                     "",
+                     "",
+                     "cURL error ({$errno}):\n {$error_message}"
+                    ));
+      }
     }
     curl_close ($ch);
   } else {
-    //echo "???";
+    logData(array ("TEL",
+                   date(DATE_FORMAT),
+                   "",
+                   "",
+                   "Unknown Error"
+                  ));
   }
 }
 
