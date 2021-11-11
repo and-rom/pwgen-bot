@@ -549,11 +549,9 @@ function answerCallbackQuery ($callback_query_id, $text=NULL, $show_alert=NULL) 
   $json = makeRequest($request);
 }
 
-/*
 function makeRequest ($request) {
   return file_get_contents($request);
 }
-*/
 
 /*
 function generateRandomProxy() {
@@ -567,6 +565,7 @@ function generateRandomProxy() {
 }
 */
 
+/*
 function makeRequest ($request) {
   //$proxy = generateRandomProxy();
   //$proxy = "104.219.251.135:13946";
@@ -603,6 +602,7 @@ function makeRequest ($request) {
                   ));
   }
 }
+*/
 
 function getPwGen ($params) {
   $pwgenURL="https://androm.ru/pwgen/passwordGenerator.php?";
